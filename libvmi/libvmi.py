@@ -1,6 +1,4 @@
-import six
-from builtins import bytes
-from builtins import object
+from builtins import bytes, object, str
 from enum import Enum
 
 from _libvmi import ffi, lib
@@ -95,7 +93,7 @@ class AccessContext(object):
 
         self.tr_mechanism = tr_mechanism
         if self.tr_mechanism == TranslateMechanism.KERNEL_SYMBOL:
-            if not isinstance(ksym, six.string_types):
+            if not isinstance(ksym, str):
                 raise RuntimeError("ksym must be a string")
             self.ksym = ksym
         self.addr = addr
