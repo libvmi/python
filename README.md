@@ -1,15 +1,9 @@
 # Libvmi Python bindings
 
-A Python adapter for LibVMI
-
-If you'd rather perform introspection using Python, instead of C, then this
-adapter will help get you going.
+If you'd rather perform introspection using Python instead of C, then these
+bindings will help get you going.
 
 The bindings are `Python 2` compatible.
-
-Contributors
-- Bryan D. Payne
-- Mathieu Tarral
 
 ## Requirements
 
@@ -96,7 +90,9 @@ raises a `LibvmiError` in such case.
 
 ### Volatility
 
-You can use the [`volatlity`](https://github.com/volatilityfoundation/volatility) framework directly in top of `PyVMI`.
+You can use the
+[`volatlity`](https://github.com/volatilityfoundation/volatility) framework
+directly in top of the bindings.
 
     git clone https://github.com/volatilityfoundation/volatility /tmp
     cp ./volatility/vmi.py /tmp/volatility/volatility/plugins/addrspaces/
@@ -107,9 +103,15 @@ Usage
 
 ### Rekall
 
-The [`Rekall`](https://github.com/google/rekall) address space is
-already integrated [upstream](https://github.com/google/rekall/blob/master/rekall-core/rekall/plugins/addrspaces/vmi.py).
+The [`Rekall`](https://github.com/google/rekall) address space is already
+integrated
+[upstream](https://github.com/google/rekall/blob/master/rekall-core/rekall/plugins/addrspaces/vmi.py).
 
 Usage
 
     rekall -f vmi://domain pslist
+
+# Contributors
+
+- Bryan D. Payne
+- Mathieu Tarral
