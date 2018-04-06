@@ -9,7 +9,7 @@ The bindings are `Python 2` compatible.
 
 - `python3-pkgconfig`
 - `python3-cffi` (`> 1.6.0`)
-- `python3-six`
+- `python3-future`
 - `libvmi`
 
 ## Setup
