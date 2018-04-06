@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# cffi generated files
+*.o
+*.c
+
+# IDE
+.idea/
