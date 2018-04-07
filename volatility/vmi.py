@@ -21,13 +21,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
+import volatility.addrspace as addrspace
+
 libvmi = None
 try:
     import libvmi
     from libvmi import Libvmi, CR3
 except ImportError:
     pass
-import volatility.addrspace as addrspace
 
 
 class VMIAddressSpace(addrspace.BaseAddressSpace):
@@ -47,7 +48,7 @@ class VMIAddressSpace(addrspace.BaseAddressSpace):
     def __init__(self, base, config, layered=False, **kwargs):
         self.as_assert(libvmi, "The LibVMI python bindings must be installed")
         addrspace.BaseAddressSpace.__init__(self, base, config, **kwargs)
-        self.as_assert(base == None or layered, 'Must be first Address Space')
+        self.as_assert(base is None or layered, 'Must be first Address Space')
         self.as_assert(config.LOCATION.startswith("vmi://"),
                        "Location doesn't start with vmi://")
 
@@ -79,7 +80,7 @@ class VMIAddressSpace(addrspace.BaseAddressSpace):
         return True
 
     def is_valid_address(self, addr):
-        if addr == None:
+        if addr is None:
             return False
         return 4096 < addr < self.vmi.get_memsize() - 1
 
