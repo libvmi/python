@@ -4,7 +4,6 @@ from enum import Enum
 from _libvmi import ffi, lib
 from _glib import lib as glib
 
-
 # export libvmi defines
 INIT_DOMAINNAME = lib.VMI_INIT_DOMAINNAME
 INIT_DOMAINID = lib.VMI_INIT_DOMAINID
@@ -16,10 +15,12 @@ CR3 = lib.CR3
 class LibvmiError(Exception):
     pass
 
+
 class VMIMode(Enum):
     XEN = 0
     KVM = 1
     FILE = 2
+
 
 class VMIConfig(Enum):
     GLOBAL_FILE_ENTRY = 0
@@ -33,56 +34,60 @@ class VMIStatus(Enum):
 
 
 class LibvmiInitError(Enum):
-    NONE = 0                 # No error
+    NONE = 0  # No error
     DRIVER_NOT_DETECTED = 1  # Failed to auto-detect hypervisor
-    DRIVER = 2               # Failed to initialize hypervisor-driver
-    VM_NOT_FOUND = 3         # Failed to find the specified VM
-    PAGING = 4               # Failed to determine or initialize paging functions
-    OS = 5                   # Failed to determine or initialize OS functions
-    EVENTS = 6               # Failed to initialize events
-    SHM = 7                  # Failed to initialize SHM
-    NO_CONFIG = 8            # No configuration was found for OS initialization
-    NO_CONFIG_ENTRY = 9      # Configuration contained no valid entry for VM
+    DRIVER = 2  # Failed to initialize hypervisor-driver
+    VM_NOT_FOUND = 3  # Failed to find the specified VM
+    PAGING = 4  # Failed to determine or initialize paging functions
+    OS = 5  # Failed to determine or initialize OS functions
+    EVENTS = 6  # Failed to initialize events
+    SHM = 7  # Failed to initialize SHM
+    NO_CONFIG = 8  # No configuration was found for OS initialization
+    NO_CONFIG_ENTRY = 9  # Configuration contained no valid entry for VM
 
 
 class PageMode(Enum):
-    UNKNOWN = 0             # page mode unknown
-    LEGACY = 1              # x86 32-bit paging
-    PAE = 2                 # x86 PAE paging
-    IA32E = 3               # x86 IA-32e paging
-    AARCH32 = 4             # ARM 32-bit paging
-    AARCH64 = 5             # ARM 64-bit paging
+    UNKNOWN = 0  # page mode unknown
+    LEGACY = 1  # x86 32-bit paging
+    PAE = 2  # x86 PAE paging
+    IA32E = 3  # x86 IA-32e paging
+    AARCH32 = 4  # ARM 32-bit paging
+    AARCH64 = 5  # ARM 64-bit paging
 
 
 class VMIArch(Enum):
-    VMI_ARCH_UNKNOWN = 0    # Unknown architecture
-    VMI_ARCH_X86 = 1        # x86 32-bit architecture
-    VMI_ARCH_X86_64 = 2     # x86 64-bit architecture
-    VMI_ARCH_ARM32 = 3      # ARM 32-bit architecture
-    VMI_ARCH_ARM64 = 4      # ARM 64-bit architecture
+    VMI_ARCH_UNKNOWN = 0  # Unknown architecture
+    VMI_ARCH_X86 = 1  # x86 32-bit architecture
+    VMI_ARCH_X86_64 = 2  # x86 64-bit architecture
+    VMI_ARCH_ARM32 = 3  # ARM 32-bit architecture
+    VMI_ARCH_ARM64 = 4  # ARM 64-bit architecture
+
 
 class VMIOS(Enum):
     UNKNOWN = 0
     LINUX = 1
     WINDOWS = 2
 
+
 class VMIWinVer(Enum):
-    OS_WINDOWS_NONE     = 0         # TODO 0 ? Not Windows
-    OS_WINDOWS_UNKNOWN  = 1         # TODO 1 ? Is Windows, not sure which
-    OS_WINDOWS_2000     = 0x0208    # Magic value for Windows 2000
-    OS_WINDOWS_XP       = 0x0290    # Magic value for Windows XP
-    OS_WINDOWS_2003     = 0x0318    # Magic value for Windows 2003
-    OS_WINDOWS_VISTA    = 0x0328    # Magic value for Windows Vista
-    OS_WINDOWS_2008     = 0x0330    # Magic value for Windows 2008
-    OS_WINDOWS_7        = 0x0340    # Magic value for Windows 7
-    OS_WINDOWS_8        = 0x0360    # Magic value for Windows 8
-    OS_WINDOWS_10       = 0x0361    # TODO last + 1 ?
+    OS_WINDOWS_NONE = 0  # TODO 0 ? Not Windows
+    OS_WINDOWS_UNKNOWN = 1  # TODO 1 ? Is Windows, not sure which
+    OS_WINDOWS_2000 = 0x0208  # Magic value for Windows 2000
+    OS_WINDOWS_XP = 0x0290  # Magic value for Windows XP
+    OS_WINDOWS_2003 = 0x0318  # Magic value for Windows 2003
+    OS_WINDOWS_VISTA = 0x0328  # Magic value for Windows Vista
+    OS_WINDOWS_2008 = 0x0330  # Magic value for Windows 2008
+    OS_WINDOWS_7 = 0x0340  # Magic value for Windows 7
+    OS_WINDOWS_8 = 0x0360  # Magic value for Windows 8
+    OS_WINDOWS_10 = 0x0361  # TODO last + 1 ?
+
 
 class TranslateMechanism(Enum):
-    NONE            = 1
-    PROCESS_DTB     = 2
-    PROCESS_PID     = 3
-    KERNEL_SYMBOL   = 4
+    NONE = 1
+    PROCESS_DTB = 2
+    PROCESS_PID = 3
+    KERNEL_SYMBOL = 4
+
 
 class AccessContext(object):
 
@@ -111,12 +116,13 @@ class AccessContext(object):
             ffi_ctx.pid = self.pid
         return ffi_ctx
 
+
 def check(status, error='VMI_FAILURE'):
     if VMIStatus(status) != VMIStatus.SUCCESS:
         raise LibvmiError(error)
 
-class Libvmi(object):
 
+class Libvmi(object):
     __slots__ = (
         'opaque_vmi',
         'vmi',
@@ -138,8 +144,10 @@ class Libvmi(object):
                 mode = self.get_access_mode(domain, init_flags, init_data)
             if not isinstance(mode, VMIMode):
                 raise RuntimeError("mode is not an instance of VMIMode")
-            if not init_flags & INIT_DOMAINNAME and not init_flags & INIT_DOMAINID:
-                raise RuntimeError("Partial init, init_flags must be either INIT_DOMAINAME or INIT_DOMAINID")
+            if (not init_flags & INIT_DOMAINNAME and
+                    not init_flags & INIT_DOMAINID):
+                raise RuntimeError("Partial init, init_flags must be either"
+                                   "INIT_DOMAINAME or INIT_DOMAINID")
             domain = domain.encode()
 
             status = lib.vmi_init(self.opaque_vmi,
@@ -150,7 +158,8 @@ class Libvmi(object):
                                   init_error)
         else:
             # vmi_init_complete
-            # if INIT_DOMAINNAME, we need to encode the string from str to bytes
+            # if INIT_DOMAINNAME, we need to encode the string
+            # from str to bytes
             if init_flags & INIT_DOMAINNAME or init_flags & INIT_DOMAINID:
                 domain = domain.encode()
             # same for VMI_CONFIG_STRING
@@ -160,7 +169,8 @@ class Libvmi(object):
                 # need to convert config to a GHashTable
                 g_str_hash_addr = ffi.addressof(glib, "g_str_hash")
                 g_str_equal_addr = ffi.addressof(glib, "g_str_equal")
-                ghash = glib.g_hash_table_new(g_str_hash_addr, g_str_equal_addr)
+                ghash = glib.g_hash_table_new(g_str_hash_addr,
+                                              g_str_equal_addr)
 
                 for k, v in list(config.items()):
                     key = k.encode()
@@ -169,7 +179,8 @@ class Libvmi(object):
                     elif isinstance(v, int):
                         value = ffi.new("int*", v)
                     else:
-                        raise RuntimeError("Invalid value {} in config hash".format(v))
+                        raise RuntimeError("Invalid value {} in config"
+                                           .format(v))
                     glib.g_hash_table_insert(ghash, key, value)
                     # keep a reference to avoid GC
                     ghash_ref[key] = value
@@ -202,13 +213,13 @@ class Libvmi(object):
         page_mode = lib.vmi_init_paging(self.vmi, flags)
         return PageMode(page_mode)
 
-    def init_os(self, config_mode=VMIConfig.GLOBAL_FILE_ENTRY, config=ffi.NULL):
+    def init_os(self, config_mode=VMIConfig.GLOBAL_FILE_ENTRY,
+                config=ffi.NULL):
         init_error = ffi.new("vmi_init_error_t *")
         ghash_ref = dict()
         if config_mode == VMIConfig.STRING:
             config = config.encode()
         elif config_mode == VMIConfig.DICT:
-            ghash = None
             # need to convert config to a GHashTable
             g_str_hash_addr = ffi.addressof(glib, "g_str_hash")
             g_str_equal_addr = ffi.addressof(glib, "g_str_equal")
@@ -221,14 +232,14 @@ class Libvmi(object):
                 elif isinstance(v, int):
                     value = ffi.new("int*", v)
                 else:
-                    raise RuntimeError("Invalid value {} in config hash".format(v))
+                    raise RuntimeError("Invalid value {} in config".format(v))
                 glib.g_hash_table_insert(ghash, key, value)
                 # keep a reference to avoid GC
                 ghash_ref[key] = value
 
             config = ghash
         os = lib.vmi_init_os(self.vmi, config_mode.value, config, init_error)
-        return (VMIOS(os), init_error[0])
+        return VMIOS(os), init_error[0]
 
     def destroy(self):
         if self.vmi:
@@ -268,7 +279,8 @@ class Libvmi(object):
 
     def translate_sym2v(self, ctx, symbol):
         vaddr = ffi.new("addr_t *")
-        status = lib.vmi_translate_sym2v(self.vmi, ctx.to_ffi(), symbol.encode(), vaddr)
+        status = lib.vmi_translate_sym2v(self.vmi, ctx.to_ffi(),
+                                         symbol.encode(), vaddr)
         check(status)
         return vaddr[0]
 
@@ -304,7 +316,8 @@ class Libvmi(object):
 
     def pagetable_lookup_extended(self, dtb, vaddr):
         page_info = ffi.new("page_info_t *")
-        status = lib.vmi_pagetable_lookup_extended(self.vmi, dtb, vaddr, page_info)
+        status = lib.vmi_pagetable_lookup_extended(self.vmi, dtb, vaddr,
+                                                   page_info)
         check(status)
         return page_info
 
@@ -312,11 +325,12 @@ class Libvmi(object):
     def read(self, ctx, count):
         buffer = ffi.new("char[]", count)
         bytes_read = ffi.new("size_t *")
-        status = lib.vmi_read(self.vmi, ctx.to_ffi(), count, buffer, bytes_read)
+        status = lib.vmi_read(self.vmi, ctx.to_ffi(), count, buffer,
+                              bytes_read)
         check(status)
         # transform into Python bytes
         buffer = ffi.unpack(buffer, bytes_read[0])
-        return (buffer, bytes_read[0])
+        return buffer, bytes_read[0]
 
     def read_8(self, ctx):
         value = ffi.new("uint8_t *")
@@ -366,20 +380,22 @@ class Libvmi(object):
     def read_ksym(self, symbol, count):
         buffer = ffi.new("char[]", count)
         bytes_read = ffi.new("size_t *")
-        status = lib.vmi_read_ksym(self.vmi, symbol.encode(), count, buffer, bytes_read)
+        status = lib.vmi_read_ksym(self.vmi, symbol.encode(), count, buffer,
+                                   bytes_read)
         check(status)
         # transform into Python bytes
         buffer = ffi.string(buffer, bytes_read[0])
-        return (buffer, bytes_read[0])
+        return buffer, bytes_read[0]
 
     def read_va(self, vaddr, pid, count):
         buffer = ffi.new("char[]", count)
         bytes_read = ffi.new("size_t *")
-        status = lib.vmi_read_va(self.vmi, vaddr, pid, count, buffer, bytes_read)
+        status = lib.vmi_read_va(self.vmi, vaddr, pid, count, buffer,
+                                 bytes_read)
         check(status)
         # transform into Python bytes
         buffer = ffi.unpack(buffer, bytes_read[0])
-        return (buffer, bytes_read[0])
+        return buffer, bytes_read[0]
 
     def read_pa(self, paddr, count, padding=False):
         buffer = ffi.new("char[]", count)
@@ -394,7 +410,7 @@ class Libvmi(object):
                 buffer += bytes(pad_size)
         else:
             check(status)
-        return (buffer, bytes_read[0])
+        return buffer, bytes_read[0]
 
     def read_8_ksym(self, symbol):
         value = ffi.new("uint8_t *")
@@ -507,7 +523,7 @@ class Libvmi(object):
         return value[0]
 
     def read_str_pa(self, paddr):
-        value = lib.vmi_read_str_pa(self.vmi,paddr)
+        value = lib.vmi_read_str_pa(self.vmi, paddr)
         if value == ffi.NULL:
             raise LibvmiError('VMI_FAILURE')
         return ffi.string(value).decode()
@@ -517,7 +533,8 @@ class Libvmi(object):
         cffi_buffer = ffi.from_buffer(buffer)
         bytes_written = ffi.new("size_t *")
         count = len(buffer)
-        status = lib.vmi_write(self.vmi, ctx.to_ffi(), count, cffi_buffer, bytes_written)
+        status = lib.vmi_write(self.vmi, ctx.to_ffi(), count, cffi_buffer,
+                               bytes_written)
         check(status)
         return bytes_written
 
@@ -525,7 +542,8 @@ class Libvmi(object):
         cffi_buffer = ffi.from_buffer(buffer)
         bytes_written = ffi.new("size_t *")
         count = len(buffer)
-        status = lib.vmi_write_ksym(self.vmi, symbol, count, cffi_buffer, bytes_written)
+        status = lib.vmi_write_ksym(self.vmi, symbol, count, cffi_buffer,
+                                    bytes_written)
         check(status)
         return bytes_written
 
@@ -533,7 +551,8 @@ class Libvmi(object):
         cffi_buffer = ffi.from_buffer(buffer)
         bytes_written = ffi.new("size_t *")
         count = len(buffer)
-        status = lib.vmi_write_va(self.vmi, vaddr, pid, count, cffi_buffer, bytes_written)
+        status = lib.vmi_write_va(self.vmi, vaddr, pid, count, cffi_buffer,
+                                  bytes_written)
         check(status)
         return bytes_written
 
@@ -541,7 +560,8 @@ class Libvmi(object):
         cffi_buffer = ffi.from_buffer(buffer)
         bytes_written = ffi.new("size_t *")
         count = len(buffer)
-        status = lib.vmi_write_va(self.vmi, paddr, count, cffi_buffer, bytes_written)
+        status = lib.vmi_write_va(self.vmi, paddr, count, cffi_buffer,
+                                  bytes_written)
         check(status)
         return bytes_written
 
@@ -667,7 +687,8 @@ class Libvmi(object):
                 "init_flags must be either INIT_DOMAINAME or INIT_DOMAINID")
         domain = domain.encode()
         cffi_mode = ffi.new("vmi_mode_t *")
-        status = lib.vmi_get_access_mode(self.vmi, domain, init_flags, init_data, cffi_mode)
+        status = lib.vmi_get_access_mode(self.vmi, domain, init_flags,
+                                         init_data, cffi_mode)
         check(status)
         return VMIMode(cffi_mode[0])
 
@@ -704,7 +725,9 @@ class Libvmi(object):
 
     def get_kernel_struct_offset(self, struct_name, member):
         value = ffi.new("addr_t *")
-        status = lib.vmi_get_kernel_struct_offset(self.vmi, struct_name.encode(), member.encode(), value)
+        status = lib.vmi_get_kernel_struct_offset(self.vmi,
+                                                  struct_name.encode(),
+                                                  member.encode(), value)
         check(status)
         return value[0]
 

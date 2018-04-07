@@ -56,7 +56,8 @@ def main(args):
                 pid = vmi.read_32_va(current_process + pid_offset, 0)
                 procname = vmi.read_str_va(current_process + name_offset, 0)
 
-                logging.info("[%s] %s (struct addr:%s)", pid, procname, hex(current_process))
+                logging.info("[%s] %s (struct addr:%s)", pid, procname,
+                             hex(current_process))
                 cur_list_entry = next_list_entry
                 next_list_entry = vmi.read_addr_va(cur_list_entry, 0)
 

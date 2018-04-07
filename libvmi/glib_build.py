@@ -37,10 +37,10 @@ includes = includes.replace('-I', '').split(' ')
 
 # set source
 ffi.set_source("_glib",
-    """
-    #include <glib.h>
-    """,
-    libraries=['glib-2.0'], include_dirs=includes)
+               """
+               #include <glib.h>
+               """,
+               libraries=['glib-2.0'], include_dirs=includes)
 
 ffi.cdef(cdef)
 

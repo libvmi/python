@@ -10,10 +10,10 @@ CDEF_FILE = 'libvmi_cdef.h'
 ffi = FFI()
 # set source
 ffi.set_source("_libvmi",
-    """
-    #include <libvmi/libvmi.h>
-    """,
-    libraries=['vmi'])
+               """
+               #include <libvmi/libvmi.h>
+               """,
+               libraries=['vmi'])
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 # we read our C definitions from an external file

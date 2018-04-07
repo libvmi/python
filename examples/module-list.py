@@ -11,12 +11,9 @@ Options:
 
 import logging
 import sys
-from docopt import docopt
-from contextlib import contextmanager
 
 from utils import init_logger, pause
 from libvmi import Libvmi, VMIOS, PageMode
-
 
 
 def main(args):
@@ -58,13 +55,14 @@ def main(args):
                     else:
                         modname = vmi.read_str_va(next_module + 8, 0)
 
-
                 elif os == VMIOS.WINDOWS:
                     page_mode = vmi.get_page_mode(0)
                     if page_mode == PageMode.IA32E:
-                        modname = vmi.read_unicode_str_va(next_module + 0x58, 0)
+                        modname = vmi.read_unicode_str_va(next_module + 0x58,
+                                                          0)
                     else:
-                        modname = vmi.read_unicode_str_va(next_module + 0x2c, 0)
+                        modname = vmi.read_unicode_str_va(next_module + 0x2c,
+                                                          0)
 
                 else:
                     logging.info("Unkown OS")
