@@ -27,4 +27,4 @@ install:
   - pip install pytest pytest-pep8
 
 script:
-  - pytests --pep8
+  - pytest --pep8
