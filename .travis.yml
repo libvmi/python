@@ -14,14 +14,14 @@ before_install:
     libxc1 libxenstore3.0 libxen-dev
     libvirt-dev
   # clone, compile and install libvmi
-  - cd libvmi
+  - ls -l
   - git clone https://github.com/libvmi/libvmi
   - cd libvmi
   - ./autogen.sh
   - ./configure --prefix=/usr
   - make -j4
   - sudo make install
-  - cd ../python
+  - cd ..
 
 install:
   - pip install .
