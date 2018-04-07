@@ -1,5 +1,7 @@
 # Libvmi Python bindings
 
+[![Build Status](https://travis-ci.org/libvmi/python.svg?branch=master)](https://travis-ci.org/libvmi/python)
+
 If you'd rather perform introspection using Python instead of C, then these
 bindings will help get you going.
 
