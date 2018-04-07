@@ -4,7 +4,6 @@ sudo: enabled
 python:
   - "2.7"
   - "3.5"
-  - "pypy2.7"
   - "pypy3.5"
 
 before_install:
@@ -15,8 +14,8 @@ before_install:
     libxc1 libxenstore3.0 libxen-dev
     libvirt-dev
   # clone, compile and install libvmi
-  - git clone https://github.com/libvmi/libvmi
-  - cd libvmi
+  - git clone https://github.com/libvmi/libvmi libvmi/libvmi
+  - cd libvmi/libvmi
   - ./autogen.sh
   - ./configure.sh --prefix=/usr
   - make -j4
