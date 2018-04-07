@@ -14,8 +14,9 @@ before_install:
     libxc1 libxenstore3.0 libxen-dev
     libvirt-dev
   # clone, compile and install libvmi
-  - git clone https://github.com/libvmi/libvmi libvmi/libvmi
-  - cd libvmi/libvmi
+  - cd libvmi
+  - git clone https://github.com/libvmi/libvmi
+  - cd libvmi
   - ./autogen.sh
   - ./configure --prefix=/usr
   - make -j4
