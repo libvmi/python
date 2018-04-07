@@ -20,7 +20,7 @@ before_install:
   - ./configure --prefix=/usr
   - make -j4
   - sudo make install
-  - cd ..
+  - cd ../python
 
 install:
   - pip install .
