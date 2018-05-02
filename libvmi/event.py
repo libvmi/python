@@ -48,6 +48,14 @@ class MemAccess(Enum):
     RWX2N = lib.VMI_MEMACCESS_RWX2N
 
 
+class RegAccess(Enum):
+    INVALID = lib.VMI_REGACCESS_INVALID
+    N = lib.VMI_REGACCESS_N
+    R = lib.VMI_REGACCESS_R
+    W = lib.VMI_REGACCESS_W
+    RW = lib.VMI_REGACCESS_RW
+
+
 @ffi.def_extern()
 def generic_event_callback(cffi_vmi, cffi_event):
     # get generic event data dict
@@ -68,6 +76,7 @@ class Event(object):
     version = EVENTS_VERSION
 
     def __init__(self, callback, slat_id=0, data=None):
+        self.type = None
         self.slat_id = slat_id
         self.data = data
         self.py_callback = callback
@@ -75,6 +84,7 @@ class Event(object):
             'vmi': None,
             'event': self,
         }
+        self.generic_handle = None
         self.cffi_event = ffi.new("vmi_event_t *")
 
     def set_vmi_instance(self, vmi_instance):
@@ -157,3 +167,32 @@ class SingleStepEvent(Event):
         self.cffi_event.ss_event.vcpus = self.vcpus
         self.cffi_event.ss_event.enable = int(self.enable)
         return self.cffi_event
+
+
+class RegEvent(Event):
+
+    type = EventType.REGISTER
+
+    def __init__(self, register, in_access, callback, equal=None, slat_id=0,
+                 data=None):
+        super().__init__(callback, slat_id, data)
+        self.register = register
+        self.in_access = in_access
+        self.equal = equal
+        if self.equal is None:
+            self.equal = 0
+
+    def to_cffi(self):
+        super().to_cffi()
+        self.cffi_event.reg_event.reg = self.register.value
+        self.cffi_event.reg_event.in_access = self.in_access.value
+        self.cffi_event.reg_event.equal = self.equal
+        return self.cffi_event
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['in_access'] = self.in_access.name
+        d['out_access'] = RegAccess(self.cffi_event.reg_event.out_access).name
+        d['value'] = hex(self.cffi_event.reg_event.value)
+        d['previous'] = hex(self.cffi_event.reg_event.previous)
+        return d

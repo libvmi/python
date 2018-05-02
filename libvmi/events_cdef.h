@@ -13,10 +13,31 @@ typedef uint16_t vmi_event_type_t;
 #define VMI_EVENT_PRIVILEGED_CALL 8
 #define VMI_EVENT_DESCRIPTOR_ACCESS 9
 
+
+typedef uint8_t vmi_reg_access_t;
+
+#define VMI_REGACCESS_INVALID   0
+#define VMI_REGACCESS_N         ...
+#define VMI_REGACCESS_R         ...
+#define VMI_REGACCESS_W         ...
+#define VMI_REGACCESS_RW        ...
+
 // reg_event_t
 typedef struct {
-    ...;
+    reg_t reg;
+    reg_t equal;
+    uint8_t async;
+    uint8_t onchange;
+    vmi_reg_access_t in_access;
+    vmi_reg_access_t out_access;
+    uint32_t _pad;
+    reg_t value;
+    union {
+        reg_t previous;
+        uint32_t msr;
+    };
 } reg_event_t;
+
 
 typedef uint8_t vmi_mem_access_t;
 

@@ -6,7 +6,43 @@
 
 #define VMI_INIT_SHM 8 /**< initialize SHM mode */
 
-#define CR3 20
+// x86 registers
+#define EAX             0
+#define EBX             1
+#define ECX             2
+#define EDX             3
+#define EBP             4
+#define ESI             5
+#define EDI             6
+#define ESP             7
+
+#define EIP             8
+#define EFLAGS          9
+
+#define RAX             ...
+#define RBX             ...
+#define RCX             ...
+#define RDX             ...
+#define RBP             ...
+#define RSI             ...
+#define RDI             ...
+#define RSP             ...
+
+#define RIP             ...
+#define RFLAGS          ...
+
+#define R8              10
+#define R9              11
+#define R10             12
+#define R11             13
+#define R12             14
+#define R13             15
+#define R14             16
+#define R15             17
+
+#define CR0             18
+#define CR2             19
+#define CR3             20
 
 // vmi_instance_t
 typedef struct vmi_instance *vmi_instance_t;
