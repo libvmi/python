@@ -3,11 +3,12 @@
 
 import sys
 import signal
+from pprint import pprint
 
 from libvmi import Libvmi, X86Reg, INIT_DOMAINNAME, INIT_EVENTS
 from libvmi.event import RegEvent, RegAccess
 
-from pprint import pprint
+from utils import dtb_to_pname
 
 
 # catch SIGINT
@@ -23,6 +24,8 @@ def signal_handler(signal, frame):
 
 def callback(vmi, event):
     pprint(event.to_dict())
+    pname = dtb_to_pname(vmi, event.cffi_event.reg_event.value)
+    print("process name: {}".format(pname))
 
 
 def main(args):
