@@ -848,6 +848,11 @@ class Libvmi(object):
         status = lib.vmi_register_event(self.vmi, cffi_event)
         check(status)
 
+    def clear_event(self, event):
+        cffi_event = event.to_cffi()
+        status = lib.vmi_clear_event(self.vmi, cffi_event, ffi.NULL)
+        check(status)
+
     def listen(self, timeout):
         status = lib.vmi_events_listen(self.vmi, timeout)
         check(status)

@@ -76,6 +76,9 @@ typedef struct {
     uint32_t vcpus;
     uint8_t enable;
     ...;
+    addr_t gla;
+    addr_t gfn;
+    addr_t offset;
 } single_step_event_t;
 
 // debug_event_t
@@ -116,6 +119,7 @@ typedef uint32_t event_response_t;
 
 typedef event_response_t (*event_callback_t)(vmi_instance_t vmi, vmi_event_t *event);
 
+typedef void (*vmi_event_free_t)(vmi_event_t *event, status_t rc);
 
 // vmi_event
 struct vmi_event {
@@ -152,6 +156,11 @@ status_t vmi_register_event(
 status_t vmi_events_listen(
     vmi_instance_t vmi,
     uint32_t timeout);
+
+status_t vmi_clear_event(
+    vmi_instance_t vmi,
+    vmi_event_t *event,
+    vmi_event_free_t free_routine);
 
 // our generic callback
 extern "Python" event_response_t generic_event_callback(
