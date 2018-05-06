@@ -1,3 +1,4 @@
+import ctypes
 from builtins import object, super
 from enum import Enum
 
@@ -66,9 +67,10 @@ def generic_event_callback(cffi_vmi, cffi_event):
     callback = event.get_callback()
     # call callback with the right Python objects as args
     event_response = callback(vmi, event)
-    if not event_response:
+    if event_response is None:
         event_response = EventResponse.NONE
     return event_response.value
+
 
 
 class Event(object):
@@ -76,7 +78,6 @@ class Event(object):
     version = EVENTS_VERSION
 
     def __init__(self, callback, slat_id=0, data=None):
-        self.type = None
         self.slat_id = slat_id
         self.data = data
         self.py_callback = callback
@@ -123,20 +124,21 @@ class MemEvent(Event):
 
     type = EventType.MEMORY
 
-    def __init__(self, in_access, gfn, callback, generic=False, slat_id=0,
+    def __init__(self, in_access, callback, gfn=0, generic=False, slat_id=0,
                  data=None):
         super().__init__(callback, slat_id, data)
         self.in_access = in_access
         self.generic = generic
         self.gfn = gfn
-        if self.generic:
-            self.gfn = ~0
 
     def to_cffi(self):
         super().to_cffi()
         self.cffi_event.mem_event.in_access = self.in_access.value
         self.cffi_event.mem_event.generic = int(self.generic)
-        self.cffi_event.mem_event.gfn = self.gfn
+        if self.generic:
+            self.cffi_event.mem_event.gfn = ctypes.c_ulonglong(~0).value
+        else:
+            self.cffi_event.mem_event.gfn = self.gfn
         return self.cffi_event
 
     def to_dict(self):
