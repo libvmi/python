@@ -72,10 +72,10 @@ def generic_event_callback(cffi_vmi, cffi_event):
     return event_response.value
 
 
-
 class Event(object):
 
     version = EVENTS_VERSION
+    type = None
 
     def __init__(self, callback, slat_id=0, data=None):
         self.slat_id = slat_id
