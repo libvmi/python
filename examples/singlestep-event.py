@@ -37,9 +37,9 @@ def main(args):
     # register SIGINT
     signal.signal(signal.SIGINT, signal_handler)
 
+    counter = 0
     with Libvmi(vm_name, INIT_DOMAINNAME | INIT_EVENTS) as vmi:
         num_vcpus = vmi.get_num_vcpus()
-        counter = 0
         ss_event = SingleStepEvent(range(num_vcpus), callback, data=counter)
         vmi.register_event(ss_event)
         # listen
@@ -47,7 +47,8 @@ def main(args):
             print("Waiting for events")
             vmi.listen(500)
         print("Stop listening")
-
+        counter = ss_event.data
+    print("Singlestepped {} instructions".format(counter))
 
 if __name__ == '__main__':
     ret = main(sys.argv)
