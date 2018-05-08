@@ -180,7 +180,57 @@ typedef struct registers {
 
 // page_info_t
 typedef struct page_info {
-    ...;
+    addr_t vaddr;
+    addr_t dtb;
+    addr_t paddr;
+    page_size_t size;
+
+    union {
+        struct {
+            addr_t pte_location;
+            addr_t pte_value;
+            addr_t pgd_location;
+            addr_t pgd_value;
+        } x86_legacy;
+
+        struct {
+            addr_t pte_location;
+            addr_t pte_value;
+            addr_t pgd_location;
+            addr_t pgd_value;
+            addr_t pdpe_location;
+            addr_t pdpe_value;
+        } x86_pae;
+
+        struct {
+            addr_t pte_location;
+            addr_t pte_value;
+            addr_t pgd_location;
+            addr_t pgd_value;
+            addr_t pdpte_location;
+            addr_t pdpte_value;
+            addr_t pml4e_location;
+            addr_t pml4e_value;
+        } x86_ia32e;
+
+        struct {
+            uint32_t fld_location;
+            uint32_t fld_value;
+            uint32_t sld_location;
+            uint32_t sld_value;
+        } arm_aarch32;
+
+        struct {
+            uint64_t zld_location;
+            uint64_t zld_value;
+            uint64_t fld_location;
+            uint64_t fld_value;
+            uint64_t sld_location;
+            uint64_t sld_value;
+            uint64_t tld_location;
+            uint64_t tld_value;
+        } arm_aarch64;
+    };
 } page_info_t;
 
 // access_context_t
