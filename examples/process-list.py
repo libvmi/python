@@ -66,6 +66,7 @@ def main(args):
                 elif os == VMIOS.LINUX and cur_list_entry == list_head:
                     break
 
+
 if __name__ == '__main__':
     init_logger()
     ret = main(sys.argv)
