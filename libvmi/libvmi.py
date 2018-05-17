@@ -2,7 +2,6 @@ from builtins import bytes, object, str
 from enum import Enum
 
 from _libvmi import ffi, lib
-from _glib import lib as glib
 
 # export libvmi defines
 INIT_DOMAINNAME = lib.VMI_INIT_DOMAINNAME
@@ -117,6 +116,16 @@ class AccessContext(object):
         return ffi_ctx
 
 
+class PageInfo(object):
+
+    def __init__(self, cffi_pageinfo):
+        self.vaddr = cffi_pageinfo.vaddr
+        self.dtb = cffi_pageinfo.dtb
+        self.paddr = cffi_pageinfo.paddr
+        self.size = cffi_pageinfo.size
+        # TODO page mode
+
+
 def check(status, error='VMI_FAILURE'):
     if VMIStatus(status) != VMIStatus.SUCCESS:
         raise LibvmiError(error)
@@ -167,10 +176,10 @@ class Libvmi(object):
                 config = config.encode()
             elif config_mode == VMIConfig.DICT:
                 # need to convert config to a GHashTable
-                g_str_hash_addr = ffi.addressof(glib, "g_str_hash")
-                g_str_equal_addr = ffi.addressof(glib, "g_str_equal")
-                ghash = glib.g_hash_table_new(g_str_hash_addr,
-                                              g_str_equal_addr)
+                g_str_hash_addr = ffi.addressof(lib, "g_str_hash")
+                g_str_equal_addr = ffi.addressof(lib, "g_str_equal")
+                ghash = lib.g_hash_table_new(g_str_hash_addr,
+                                             g_str_equal_addr)
 
                 for k, v in list(config.items()):
                     key = k.encode()
@@ -181,7 +190,7 @@ class Libvmi(object):
                     else:
                         raise RuntimeError("Invalid value {} in config"
                                            .format(v))
-                    glib.g_hash_table_insert(ghash, key, value)
+                    lib.g_hash_table_insert(ghash, key, value)
                     # keep a reference to avoid GC
                     ghash_ref[key] = value
 
@@ -201,7 +210,7 @@ class Libvmi(object):
         self.vmi = self.opaque_vmi[0]
         # destroy ghashtable if necessary
         if ghash is not None:
-            glib.g_hash_table_destroy(ghash)
+            lib.g_hash_table_destroy(ghash)
 
     def __enter__(self):
         return self
@@ -221,9 +230,9 @@ class Libvmi(object):
             config = config.encode()
         elif config_mode == VMIConfig.DICT:
             # need to convert config to a GHashTable
-            g_str_hash_addr = ffi.addressof(glib, "g_str_hash")
-            g_str_equal_addr = ffi.addressof(glib, "g_str_equal")
-            ghash = glib.g_hash_table_new(g_str_hash_addr, g_str_equal_addr)
+            g_str_hash_addr = ffi.addressof(lib, "g_str_hash")
+            g_str_equal_addr = ffi.addressof(lib, "g_str_equal")
+            ghash = lib.g_hash_table_new(g_str_hash_addr, g_str_equal_addr)
 
             for k, v in list(config.items()):
                 key = k.encode()
@@ -233,7 +242,7 @@ class Libvmi(object):
                     value = ffi.new("int*", v)
                 else:
                     raise RuntimeError("Invalid value {} in config".format(v))
-                glib.g_hash_table_insert(ghash, key, value)
+                lib.g_hash_table_insert(ghash, key, value)
                 # keep a reference to avoid GC
                 ghash_ref[key] = value
 
@@ -796,3 +805,18 @@ class Libvmi(object):
 
     def pidcache_add(self, pid, dtb):
         lib.vmi_pidcache_add(self.vmi, pid, dtb)
+
+    # extra
+    def get_va_pages(self, dtb):
+        cffi_va_pages = lib.vmi_get_va_pages(self.vmi, dtb)
+        loop = cffi_va_pages
+        va_pages = []
+        while loop:
+            cffi_page_info = ffi.cast("page_info_t *", loop.data)
+            page_info = PageInfo(cffi_page_info)
+            va_pages.append(page_info)
+            # free data
+            lib.g_free(loop.data)
+            loop = loop.next
+        lib.g_slist_free(cffi_va_pages)
+        return va_pages

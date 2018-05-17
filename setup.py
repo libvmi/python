@@ -11,7 +11,7 @@ setup(
     setup_requires=["cffi>=1.6.0", "pkgconfig"],
     install_requires=["cffi>=1.6.0", "future"],
     tests_require=["pytest", "pytest-pep8"],
-    cffi_modules=['libvmi/glib_build.py:ffi', 'libvmi/libvmi_build.py:ffi'],
+    cffi_modules=['libvmi/libvmi_build.py:ffi'],
     packages=['libvmi'],
     package_data={
         'libvmi': ['*_cdef.h']
