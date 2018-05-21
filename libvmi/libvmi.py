@@ -820,3 +820,28 @@ class Libvmi(object):
             loop = loop.next
         lib.g_slist_free(cffi_va_pages)
         return va_pages
+
+    # slat
+    def slat_get_domain_state(self):
+        state = ffi.new("bool *")
+        status = lib.vmi_slat_get_domain_state(self.vmi, state)
+        check(status)
+        return bool(state[0])
+
+    def slat_create(self):
+        slat_id = ffi.new("uint16_t *")
+        status = lib.vmi_slat_create(self.vmi, slat_id)
+        check(status)
+        return slat_id[0]
+
+    def slat_destroy(self, slat_idx):
+        status = lib.vmi_slat_destroy(self.vmi, slat_idx)
+        check(status)
+
+    def slat_switch(self, slat_idx):
+        status = lib.vmi_slat_switch(self.vmi, slat_idx)
+        check(status)
+
+    def slat_change_gfn(self, slat_idx, old_gfn, new_gfn):
+        status = lib.vmi_slat_change_gfn(self.vmi, slat_idx, old_gfn, new_gfn)
+        check(status)
