@@ -11,7 +11,8 @@ CDEF_HEADERS = [
     'glib_cdef.h',
     'libvmi_cdef.h',
     'libvmi_extra_cdef.h',
-    'slat_cdef.h'
+    'slat_cdef.h',
+    'shm_cdef.h'
 ]
 
 
@@ -54,6 +55,7 @@ ffi.set_source("_libvmi",
                #include <libvmi/libvmi.h>
                #include <libvmi/libvmi_extra.h>
                #include <libvmi/slat.h>
+               #include <libvmi/shm.h>
                """,
                libraries=libs, include_dirs=includes)
 

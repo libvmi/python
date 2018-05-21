@@ -845,3 +845,22 @@ class Libvmi(object):
     def slat_change_gfn(self, slat_idx, old_gfn, new_gfn):
         status = lib.vmi_slat_change_gfn(self.vmi, slat_idx, old_gfn, new_gfn)
         check(status)
+
+    # shm
+    def shm_snapshot_create(self):
+        status = lib.vmi_shm_snapshot_create(self.vmi)
+        check(status)
+
+    def shm_snapshot_destroy(self):
+        status = lib.vmi_shm_snapshot_destroy(self.vmi)
+        check(status)
+
+    def get_dgpma(self, paddr, count):
+        buf_ptr = ffi.new("void **")
+        size = lib.vmi_get_dgpma(self.vmi, paddr, buf_ptr, count)
+        return buf_ptr, size
+
+    def get_dgvma(self, vaddr, pid, count):
+        buf_ptr = ffi.new("void **")
+        size = lib.vmi_get_dgvma(self.vmi, vaddr, pid, buf_ptr, count)
+        return buf_ptr, size
