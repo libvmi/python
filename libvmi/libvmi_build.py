@@ -55,8 +55,8 @@ ffi.set_source("_libvmi",
                """
                #include <libvmi/libvmi.h>
                #include <libvmi/events.h>
-               #include <libvmi/libvmi_extra.h>
                #include <libvmi/slat.h>
+               #include <libvmi/libvmi_extra.h>
                """,
                libraries=libs, include_dirs=includes)
 
