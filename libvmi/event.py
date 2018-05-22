@@ -61,12 +61,10 @@ class RegAccess(Enum):
 def generic_event_callback(cffi_vmi, cffi_event):
     # get generic event data dict
     generic_data = ffi.from_handle(cffi_event.data)
-    # get true callback
+    # get event object
     event = generic_data['event']
-    vmi = generic_data['vmi']
-    callback = event.get_callback()
-    # call callback with the right Python objects as args
-    event_response = callback(vmi, event)
+    # call callback with the right Python args
+    event_response = event.py_callback(event.vmi, event)
     if event_response is None:
         event_response = EventResponse.NONE
     return event_response.value
@@ -80,19 +78,25 @@ class Event(object):
     def __init__(self, callback, slat_id=0, data=None):
         self.slat_id = slat_id
         self.data = data
-        self.py_callback = callback
+        self._py_callback = callback
+        self._vmi = None
         self.generic_data = {
-            'vmi': None,
             'event': self,
         }
         self.generic_handle = None
         self.cffi_event = ffi.new("vmi_event_t *")
 
-    def set_vmi_instance(self, vmi_instance):
-        self.generic_data['vmi'] = vmi_instance
+    @property
+    def vmi(self):
+        return self._vmi
 
-    def get_callback(self):
-        return self.py_callback
+    @vmi.setter
+    def vmi(self, vmi):
+        self._vmi = vmi
+
+    @property
+    def py_callback(self):
+        return self._py_callback
 
     def to_cffi(self):
         self.cffi_event.version = self.version

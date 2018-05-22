@@ -843,7 +843,7 @@ class Libvmi(object):
 
     # events
     def register_event(self, event):
-        event.set_vmi_instance(self)
+        event.vmi = self
         cffi_event = event.to_cffi()
         status = lib.vmi_register_event(self.vmi, cffi_event)
         check(status)
