@@ -7,7 +7,7 @@ from pprint import pprint
 
 from libvmi import Libvmi, INIT_DOMAINNAME, INIT_EVENTS
 from libvmi.event import MemEvent, MemAccess, EventResponse, SingleStepEvent
-from utils import dtb_to_pname
+from utils import dtb_to_pname, pause
 
 
 # This script is similar to memaccess-event.py
@@ -43,8 +43,7 @@ def cb_mem_event(vmi, event):
         return EventResponse.TOGGLE_SINGLESTEP
     # we are lucky, hit the targeted on the first call to the callback
     pname = dtb_to_pname(vmi, event.cffi_event.x86_regs.cr3)
-    print('At {}: {}, handle: {}'.format(event.data['symbol'], pname,
-                                         hex(event.cffi_event.x86_regs.rcx)))
+    print('At {}: {}'.format(event.data['symbol'], pname))
     listen_interrupted = True
 
 
@@ -78,29 +77,33 @@ def continue_until(vmi, addr, symbol):
         'target_vaddr': addr,
         'target_gfn': gfn,
     }
-    # register singlestep events
-    nb_vcpu = vmi.get_num_vcpus()
-    ss_event_list = []
-    for vcpu in range(nb_vcpu):
-        ss_event = SingleStepEvent([vcpu], cb_single_step_event, enable=False,
-                                   data=user_data)
-        # register
-        vmi.register_event(ss_event)
-        ss_event_list.append(ss_event)
-    # register memory event on vaddr's frame
-    mem_event = MemEvent(MemAccess.X, cb_mem_event, gfn, data=user_data)
-    # add mem_event to user_data
-    user_data['mem_event'] = mem_event
-    vmi.register_event(mem_event)
+    with pause(vmi):
+        # register singlestep events
+        nb_vcpu = vmi.get_num_vcpus()
+        ss_event_list = []
+        for vcpu in range(nb_vcpu):
+            ss_event = SingleStepEvent([vcpu], cb_single_step_event,
+                                       enable=False, data=user_data)
+            # register
+            vmi.register_event(ss_event)
+            ss_event_list.append(ss_event)
+        # register memory event on vaddr's frame
+        mem_event = MemEvent(MemAccess.X, cb_mem_event, gfn, data=user_data)
+        # add mem_event to user_data
+        user_data['mem_event'] = mem_event
+        vmi.register_event(mem_event)
     # listen
     listen_interrupted = False
     while not listen_interrupted:
         # print("Waiting for events")
         vmi.listen(1000)
     # print("Stop listening")
-    vmi.clear_event(mem_event)
-    for ss_event in ss_event_list:
-        vmi.clear_event(ss_event)
+    with pause(vmi):
+        # process remaining events
+        vmi.listen(0)
+        vmi.clear_event(mem_event)
+        for ss_event in ss_event_list:
+            vmi.clear_event(ss_event)
 
 
 def main(args):
