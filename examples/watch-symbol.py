@@ -50,7 +50,7 @@ def cb_mem_event(vmi, event):
 
 def cb_single_step_event(vmi, event):
     global listen_interrupted
-    #pprint(event.to_dict())
+    # pprint(event.to_dict())
     if event.cffi_event.ss_event.gfn != event.data['target_gfn']:
         # out of the target page
         # reregister mem_event
