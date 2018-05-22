@@ -98,6 +98,10 @@ class Event(object):
     def py_callback(self):
         return self._py_callback
 
+    @py_callback.setter
+    def py_callback(self, callback):
+        self._py_callback = callback
+
     def to_cffi(self):
         self.cffi_event.version = self.version
         self.cffi_event.type = self.type.value
