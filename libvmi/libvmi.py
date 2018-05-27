@@ -857,6 +857,10 @@ class Libvmi(object):
         status = lib.vmi_events_listen(self.vmi, timeout)
         check(status)
 
+    def are_events_pending(self):
+        events_pending = lib.vmi_are_events_pending(self.vmi)
+        return events_pending
+
     # extra
     def get_va_pages(self, dtb):
         cffi_va_pages = lib.vmi_get_va_pages(self.vmi, dtb)
