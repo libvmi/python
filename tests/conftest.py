@@ -6,7 +6,7 @@ import xml.etree.ElementTree as tree
 import pytest
 import libvirt
 
-from libvmi import Libvmi, VMIConfig
+from libvmi import Libvmi, VMIConfig, INIT_DOMAINNAME, INIT_EVENTS
 
 WINRM_PORT = 5985
 
@@ -93,5 +93,14 @@ def domain(request, libvirt_con):
 def vmi(domain):
     vm_config = DOMAIN_CONFIGS[domain.name()]
     with Libvmi(domain.name(), config_mode=VMIConfig.DICT,
+                config=vm_config) as vmi:
+        yield vmi
+
+
+@pytest.fixture(scope='session')
+def vmiev(domain):
+    vm_config = DOMAIN_CONFIGS[domain.name()]
+    with Libvmi(domain.name(), INIT_DOMAINNAME | INIT_EVENTS,
+                config_mode=VMIConfig.DICT,
                 config=vm_config) as vmi:
         yield vmi

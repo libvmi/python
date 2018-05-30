@@ -50,6 +50,7 @@ def main(args):
         counter = ss_event.data
     print("Singlestepped {} instructions".format(counter))
 
+
 if __name__ == '__main__':
     ret = main(sys.argv)
     sys.exit(ret)
