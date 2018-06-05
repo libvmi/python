@@ -84,7 +84,7 @@ class Event(object):
             'event': self,
         }
         self.generic_handle = None
-        self.cffi_event = ffi.new("vmi_event_t *")
+        self._cffi_event = ffi.new("vmi_event_t *")
 
     @property
     def vmi(self):
@@ -102,16 +102,20 @@ class Event(object):
     def py_callback(self, callback):
         self._py_callback = callback
 
+    @property
+    def cffi_event(self):
+        return self._cffi_event
+
     def to_cffi(self):
-        self.cffi_event.version = self.version
-        self.cffi_event.type = self.type.value
-        self.cffi_event.slat_id = self.slat_id
+        self._cffi_event.version = self.version
+        self._cffi_event.type = self.type.value
+        self._cffi_event.slat_id = self.slat_id
         # convert our generic_data dict to a CFFI void* handle
         # and keep a reference to the handle in self.generic_handle
         self.generic_handle = ffi.new_handle(self.generic_data)
         # assign the handle to the event data
-        self.cffi_event.data = self.generic_handle
-        self.cffi_event.callback = lib.generic_event_callback
+        self._cffi_event.data = self.generic_handle
+        self._cffi_event.callback = lib.generic_event_callback
 
     def to_dict(self):
         return {
@@ -119,11 +123,11 @@ class Event(object):
             'type': self.type.name,
             'slat_id': self.slat_id,
             'data': self.data,
-            'vcpu_id': self.cffi_event.vcpu_id,
+            'vcpu_id': self._cffi_event.vcpu_id,
             'x86_regs': {
-                'rax': hex(self.cffi_event.x86_regs.rax),
-                'rsp': hex(self.cffi_event.x86_regs.rsp),
-                'rip': hex(self.cffi_event.x86_regs.rip),
+                'rax': hex(self._cffi_event.x86_regs.rax),
+                'rsp': hex(self._cffi_event.x86_regs.rsp),
+                'rip': hex(self._cffi_event.x86_regs.rip),
             }
         }
 
@@ -141,22 +145,22 @@ class MemEvent(Event):
 
     def to_cffi(self):
         super().to_cffi()
-        self.cffi_event.mem_event.in_access = self.in_access.value
-        self.cffi_event.mem_event.generic = int(self.generic)
+        self._cffi_event.mem_event.in_access = self.in_access.value
+        self._cffi_event.mem_event.generic = int(self.generic)
         if self.generic:
-            self.cffi_event.mem_event.gfn = ctypes.c_ulonglong(~0).value
+            self._cffi_event.mem_event.gfn = ctypes.c_ulonglong(~0).value
         else:
-            self.cffi_event.mem_event.gfn = self.gfn
-        return self.cffi_event
+            self._cffi_event.mem_event.gfn = self.gfn
+        return self._cffi_event
 
     def to_dict(self):
         d = super().to_dict()
         d['in_access'] = self.in_access.name
-        d['out_access'] = MemAccess(self.cffi_event.mem_event.out_access).name
-        d['gptw'] = bool(self.cffi_event.mem_event.gptw)
-        d['gla_valid'] = bool(self.cffi_event.mem_event.gla_valid)
-        d['gla'] = hex(self.cffi_event.mem_event.gla)
-        d['offset'] = hex(self.cffi_event.mem_event.offset)
+        d['out_access'] = MemAccess(self._cffi_event.mem_event.out_access).name
+        d['gptw'] = bool(self._cffi_event.mem_event.gptw)
+        d['gla_valid'] = bool(self._cffi_event.mem_event.gla_valid)
+        d['gla'] = hex(self._cffi_event.mem_event.gla)
+        d['offset'] = hex(self._cffi_event.mem_event.offset)
         return d
 
 
@@ -174,9 +178,9 @@ class SingleStepEvent(Event):
 
     def to_cffi(self):
         super().to_cffi()
-        self.cffi_event.ss_event.vcpus = self.vcpus
-        self.cffi_event.ss_event.enable = int(self.enable)
-        return self.cffi_event
+        self._cffi_event.ss_event.vcpus = self.vcpus
+        self._cffi_event.ss_event.enable = int(self.enable)
+        return self._cffi_event
 
 
 class RegEvent(Event):
@@ -194,15 +198,15 @@ class RegEvent(Event):
 
     def to_cffi(self):
         super().to_cffi()
-        self.cffi_event.reg_event.reg = self.register.value
-        self.cffi_event.reg_event.in_access = self.in_access.value
-        self.cffi_event.reg_event.equal = self.equal
-        return self.cffi_event
+        self._cffi_event.reg_event.reg = self.register.value
+        self._cffi_event.reg_event.in_access = self.in_access.value
+        self._cffi_event.reg_event.equal = self.equal
+        return self._cffi_event
 
     def to_dict(self):
         d = super().to_dict()
         d['in_access'] = self.in_access.name
-        d['out_access'] = RegAccess(self.cffi_event.reg_event.out_access).name
-        d['value'] = hex(self.cffi_event.reg_event.value)
-        d['previous'] = hex(self.cffi_event.reg_event.previous)
+        d['out_access'] = RegAccess(self._cffi_event.reg_event.out_access).name
+        d['value'] = hex(self._cffi_event.reg_event.value)
+        d['previous'] = hex(self._cffi_event.reg_event.previous)
         return d
