@@ -8,11 +8,46 @@ INIT_DOMAINNAME = lib.VMI_INIT_DOMAINNAME
 INIT_DOMAINID = lib.VMI_INIT_DOMAINID
 INIT_EVENTS = lib.VMI_INIT_EVENTS
 INIT_SHM = lib.VMI_INIT_SHM
-CR3 = lib.CR3
 
 
 class LibvmiError(Exception):
     pass
+
+
+class X86Reg(Enum):
+    EAX = lib.EAX
+    EBX = lib.EBX
+    ECX = lib.ECX
+    EDX = lib.EDX
+    EBI = lib.EBP
+    ESI = lib.ESI
+    EDI = lib.EDI
+    ESP = lib.ESP
+    EIP = lib.EIP
+    EFLAGS = lib.EFLAGS
+
+    RAX = lib.RAX
+    RBX = lib.RBX
+    RCX = lib.RCX
+    RDX = lib.RDX
+    RBI = lib.RBP
+    RSI = lib.RSI
+    RDI = lib.RDI
+    RSP = lib.RSP
+    RIP = lib.RIP
+    RFLAGS = lib.RFLAGS
+    R8 = lib.R8
+    R9 = lib.R9
+    R10 = lib.R10
+    R11 = lib.R11
+    R12 = lib.R12
+    R13 = lib.R13
+    R14 = lib.R14
+    R15 = lib.R15
+
+    CR0 = lib.CR0
+    CR2 = lib.CR2
+    CR3 = lib.CR3
 
 
 class VMIMode(Enum):
@@ -770,7 +805,7 @@ class Libvmi(object):
 
     # TODO needs a wrapper
     def set_vcpuregs(self, regs, vcpu):
-        status = lib.vmi_set_vcpuregs(regs, vcpu)
+        status = lib.vmi_set_vcpuregs(self.vmi, regs, vcpu)
         check(status)
 
     def pause_vm(self):
@@ -805,6 +840,26 @@ class Libvmi(object):
 
     def pidcache_add(self, pid, dtb):
         lib.vmi_pidcache_add(self.vmi, pid, dtb)
+
+    # events
+    def register_event(self, event):
+        event.vmi = self
+        cffi_event = event.to_cffi()
+        status = lib.vmi_register_event(self.vmi, cffi_event)
+        check(status)
+
+    def clear_event(self, event):
+        cffi_event = event.to_cffi()
+        status = lib.vmi_clear_event(self.vmi, cffi_event, ffi.NULL)
+        check(status)
+
+    def listen(self, timeout):
+        status = lib.vmi_events_listen(self.vmi, timeout)
+        check(status)
+
+    def are_events_pending(self):
+        events_pending = lib.vmi_are_events_pending(self.vmi)
+        return events_pending
 
     # extra
     def get_va_pages(self, dtb):

@@ -6,12 +6,14 @@ import os
 import pkgconfig
 from cffi import FFI
 
+
 # glib_cdef.h must be first
 CDEF_HEADERS = [
     'glib_cdef.h',
     'libvmi_cdef.h',
+    'events_cdef.h',
+    'slat_cdef.h',
     'libvmi_extra_cdef.h',
-    'slat_cdef.h'
 ]
 
 
@@ -52,8 +54,9 @@ ffi = FFI()
 ffi.set_source("_libvmi",
                """
                #include <libvmi/libvmi.h>
-               #include <libvmi/libvmi_extra.h>
+               #include <libvmi/events.h>
                #include <libvmi/slat.h>
+               #include <libvmi/libvmi_extra.h>
                """,
                libraries=libs, include_dirs=includes)
 
@@ -68,6 +71,7 @@ for cdef_path in CDEF_HEADERS:
         # add newline for next file
         cdef_content += '\n'
 ffi.cdef(cdef_content)
+
 
 if __name__ == "__main__":
     ffi.compile(verbose=True)
