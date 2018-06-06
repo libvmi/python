@@ -14,6 +14,7 @@ setup(
     version='3.2',
     description='Python interface to LibVMI',
     long_description=read_file('README.md'),
+    long_description_content_type='text/markdown',
     author='Mathieu Tarral',
     author_email='mathieu.tarral@protonmail.com',
     url='https://github.com/libvmi/python',
