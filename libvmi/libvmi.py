@@ -604,7 +604,7 @@ class Libvmi(object):
         cffi_buffer = ffi.from_buffer(buffer)
         bytes_written = ffi.new("size_t *")
         count = len(buffer)
-        status = lib.vmi_write_va(self.vmi, paddr, count, cffi_buffer,
+        status = lib.vmi_write_pa(self.vmi, paddr, count, cffi_buffer,
                                   bytes_written)
         check(status)
         return bytes_written
