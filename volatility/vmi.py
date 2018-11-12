@@ -26,7 +26,7 @@ import volatility.addrspace as addrspace
 libvmi = None
 try:
     import libvmi
-    from libvmi import Libvmi, CR3
+    from libvmi import Libvmi, X86Reg
 except ImportError:
     pass
 
@@ -54,7 +54,7 @@ class VMIAddressSpace(addrspace.BaseAddressSpace):
 
         domain = config.LOCATION[len("vmi://"):]
         self.vmi = Libvmi(domain, partial=True)
-        self.dtb = self.vmi.get_vcpu_reg(CR3, 0)
+        self.dtb = self.vmi.get_vcpu_reg(X86Reg.CR3.value, 0)
 
     def close(self):
         self.vmi.destroy()
@@ -67,10 +67,7 @@ class VMIAddressSpace(addrspace.BaseAddressSpace):
         return buffer
 
     def zread(self, addr, length):
-        buffer, bytes_read = self.vmi.read_pa(addr, length)
-        if bytes_read != length:
-            # fill with zeroes
-            buffer += bytes(length - bytes_read).decode()
+        buffer, bytes_read = self.vmi.read_pa(addr, length, padding=True)
         return buffer
 
     def write(self, addr, data):
