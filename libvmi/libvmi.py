@@ -51,76 +51,77 @@ class X86Reg(Enum):
 
 
 class VMIMode(Enum):
-    XEN = 0
-    KVM = 1
-    FILE = 2
+    XEN = lib.VMI_XEN
+    KVM = lib.VMI_KVM
+    FILE = lib.VMI_FILE
 
 
 class VMIConfig(Enum):
-    GLOBAL_FILE_ENTRY = 0
-    STRING = 1
-    DICT = 2
+    GLOBAL_FILE_ENTRY = lib.VMI_CONFIG_GLOBAL_FILE_ENTRY
+    STRING = lib.VMI_CONFIG_STRING
+    DICT = lib.VMI_CONFIG_GHASHTABLE
 
 
 class VMIStatus(Enum):
-    SUCCESS = 0
-    FAILURE = 1
+    SUCCESS = lib.VMI_SUCCESS
+    FAILURE = lib.VMI_FAILURE
 
 
 class LibvmiInitError(Enum):
-    NONE = 0  # No error
-    DRIVER_NOT_DETECTED = 1  # Failed to auto-detect hypervisor
-    DRIVER = 2  # Failed to initialize hypervisor-driver
-    VM_NOT_FOUND = 3  # Failed to find the specified VM
-    PAGING = 4  # Failed to determine or initialize paging functions
-    OS = 5  # Failed to determine or initialize OS functions
-    EVENTS = 6  # Failed to initialize events
-    SHM = 7  # Failed to initialize SHM
-    NO_CONFIG = 8  # No configuration was found for OS initialization
-    NO_CONFIG_ENTRY = 9  # Configuration contained no valid entry for VM
+    NONE = lib.VMI_INIT_ERROR_NONE
+    DRIVER_NOT_DETECTED = lib.VMI_INIT_ERROR_DRIVER_NOT_DETECTED
+    DRIVER = lib.VMI_INIT_ERROR_DRIVER
+    VM_NOT_FOUND = lib.VMI_INIT_ERROR_VM_NOT_FOUND
+    PAGING = lib.VMI_INIT_ERROR_PAGING
+    OS = lib.VMI_INIT_ERROR_OS
+    EVENTS = lib.VMI_INIT_ERROR_EVENTS
+    SHM = lib.VMI_INIT_ERROR_SHM
+    NO_CONFIG = lib.VMI_INIT_ERROR_NO_CONFIG
+    NO_CONFIG_ENTRY = lib.VMI_INIT_ERROR_NO_CONFIG_ENTRY
 
 
 class PageMode(Enum):
-    UNKNOWN = 0  # page mode unknown
-    LEGACY = 1  # x86 32-bit paging
-    PAE = 2  # x86 PAE paging
-    IA32E = 3  # x86 IA-32e paging
-    AARCH32 = 4  # ARM 32-bit paging
-    AARCH64 = 5  # ARM 64-bit paging
+    UNKNOWN = lib.VMI_PM_UNKNOWN
+    LEGACY = lib.VMI_PM_LEGACY
+    PAE = lib.VMI_PM_PAE
+    IA32E = lib.VMI_PM_IA32E
+    AARCH32 = lib.VMI_PM_AARCH32
+    AARCH64 = lib.VMI_PM_AARCH64
 
 
 class VMIArch(Enum):
-    VMI_ARCH_UNKNOWN = 0  # Unknown architecture
-    VMI_ARCH_X86 = 1  # x86 32-bit architecture
-    VMI_ARCH_X86_64 = 2  # x86 64-bit architecture
-    VMI_ARCH_ARM32 = 3  # ARM 32-bit architecture
-    VMI_ARCH_ARM64 = 4  # ARM 64-bit architecture
+    VMI_ARCH_UNKNOWN = lib.VMI_PM_UNKNOWN
+    VMI_ARCH_X86 = lib.VMI_ARCH_X86
+    VMI_ARCH_X86_64 = lib.VMI_ARCH_X86_64
+    VMI_ARCH_ARM32 = lib.VMI_ARCH_ARM32
+    VMI_ARCH_ARM64 = lib.VMI_ARCH_ARM64
 
 
 class VMIOS(Enum):
-    UNKNOWN = 0
-    LINUX = 1
-    WINDOWS = 2
+    UNKNOWN = lib.VMI_OS_UNKNOWN
+    LINUX = lib.VMI_OS_LINUX
+    WINDOWS = lib.VMI_OS_WINDOWS
 
 
 class VMIWinVer(Enum):
-    OS_WINDOWS_NONE = 0  # TODO 0 ? Not Windows
-    OS_WINDOWS_UNKNOWN = 1  # TODO 1 ? Is Windows, not sure which
-    OS_WINDOWS_2000 = 0x0208  # Magic value for Windows 2000
-    OS_WINDOWS_XP = 0x0290  # Magic value for Windows XP
-    OS_WINDOWS_2003 = 0x0318  # Magic value for Windows 2003
-    OS_WINDOWS_VISTA = 0x0328  # Magic value for Windows Vista
-    OS_WINDOWS_2008 = 0x0330  # Magic value for Windows 2008
-    OS_WINDOWS_7 = 0x0340  # Magic value for Windows 7
-    OS_WINDOWS_8 = 0x0360  # Magic value for Windows 8
-    OS_WINDOWS_10 = 0x0361  # TODO last + 1 ?
+    OS_WINDOWS_NONE = lib.VMI_OS_WINDOWS_NONE
+    OS_WINDOWS_UNKNOWN = lib.VMI_OS_WINDOWS_UNKNOWN
+    OS_WINDOWS_2000 = lib.VMI_OS_WINDOWS_2000
+    OS_WINDOWS_XP = lib.VMI_OS_WINDOWS_XP
+    OS_WINDOWS_2003 = lib.VMI_OS_WINDOWS_2003
+    OS_WINDOWS_VISTA = lib.VMI_OS_WINDOWS_VISTA
+    OS_WINDOWS_2008 = lib.VMI_OS_WINDOWS_2008
+    OS_WINDOWS_7 = lib.VMI_OS_WINDOWS_7
+    OS_WINDOWS_8 = lib.VMI_OS_WINDOWS_8
+    OS_WINDOWS_10 = lib.VMI_OS_WINDOWS_10
 
 
 class TranslateMechanism(Enum):
-    NONE = 1
-    PROCESS_DTB = 2
-    PROCESS_PID = 3
-    KERNEL_SYMBOL = 4
+    INVALID = lib.VMI_TM_INVALID
+    NONE = lib.VMI_TM_NONE
+    PROCESS_DTB = lib.VMI_TM_PROCESS_DTB
+    PROCESS_PID = lib.VMI_TM_PROCESS_PID
+    KERNEL_SYMBOL = lib.VMI_TM_KERNEL_SYMBOL
 
 
 class AccessContext(object):
