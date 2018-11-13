@@ -20,7 +20,7 @@ before_install:
   - cd /tmp/libvmi
   - ./autogen.sh
   - ./configure --prefix=/usr
-  - make -j4
+  - make
   - sudo make install
   - cd $OLDPWD
 
