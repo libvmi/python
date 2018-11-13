@@ -11,7 +11,7 @@ def read_file(filename):
 
 setup(
     name='libvmi',
-    version='3.2.1',
+    version='3.2.3',
     description='Python interface to LibVMI',
     long_description=read_file('README.md'),
     long_description_content_type='text/markdown',
