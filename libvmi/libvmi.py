@@ -15,22 +15,11 @@ class LibvmiError(Exception):
 
 
 class X86Reg(Enum):
-    EAX = lib.EAX
-    EBX = lib.EBX
-    ECX = lib.ECX
-    EDX = lib.EDX
-    EBI = lib.EBP
-    ESI = lib.ESI
-    EDI = lib.EDI
-    ESP = lib.ESP
-    EIP = lib.EIP
-    EFLAGS = lib.EFLAGS
-
     RAX = lib.RAX
     RBX = lib.RBX
     RCX = lib.RCX
     RDX = lib.RDX
-    RBI = lib.RBP
+    RBP = lib.RBP
     RSI = lib.RSI
     RDI = lib.RDI
     RSP = lib.RSP
@@ -48,6 +37,54 @@ class X86Reg(Enum):
     CR0 = lib.CR0
     CR2 = lib.CR2
     CR3 = lib.CR3
+
+
+class Registers:
+    """
+    This class acts as a wrapper on top of
+    vmi.get_vcpuregs and vmi.set_vcpuregs methods, only for x86.
+
+    It is meant to be used as a dictionary:
+    regs = vmi.get_vcpuregs(0)
+    regs[X86Reg.RIP]
+
+    regs = Registers()
+    regs[X86Reg.RAX] = 0x42
+    regs[X86Reg.RSP] = 0xabcd
+    vmi.set_vcpuregs(regs, 0)
+
+    for ARM architecture, there is no wrapper yet,
+    use directly the cffi struct:
+    regs = vmi.get_vcpuregs(0)
+    regs.cffi_regs.arm.xxx
+    """
+
+    def __init__(self, regs=None):
+        self.cffi_regs = regs
+        if not self.cffi_regs:
+            self.cffi_regs = ffi.new('registers_t *')
+
+    def __getitem__(self, index):
+        # index should be an enum
+        # only x86regs supported for now
+        if not isinstance(index, X86Reg):
+            raise RuntimeError('Must be an X86Reg enum value')
+        try:
+            return getattr(self.cffi_regs.x86, index.name.lower())
+        except AttributeError as e:
+            raise RuntimeError('Unknown field {} in regs.x86'
+                               .format(index.name.lower())) from e
+
+    def __setitem__(self, index, value):
+        # index should be an enum
+        # only x86regs supported for now
+        if not isinstance(index, X86Reg):
+            raise RuntimeError('Must be an X86Reg enum value')
+        try:
+            setattr(self.cffi_regs.x86, index.name.lower(), value)
+        except AttributeError as e:
+            raise RuntimeError('Unknown field {} in regs.x86'
+                               .format(index.name.lower())) from e
 
 
 class VMIMode(Enum):
@@ -792,21 +829,19 @@ class Libvmi(object):
         check(status)
         return value[0]
 
-    # TODO wrapp registers_t
     def get_vcpuregs(self, vcpu):
-        registers = ffi.new("registers_t *")
-        status = lib.vmi_get_vcpuregs(self.vmi, registers, vcpu)
+        registers_t = ffi.new("registers_t *")
+        status = lib.vmi_get_vcpuregs(self.vmi, registers_t, vcpu)
         check(status)
-        return registers
+        return Registers(registers_t)
 
     # TODO same thing, needs a wrapper
     def set_vcpureg(self, value, reg, vcpu):
         status = lib.vmi_set_vcpureg(self.vmi, value, reg, vcpu)
         check(status)
 
-    # TODO needs a wrapper
     def set_vcpuregs(self, regs, vcpu):
-        status = lib.vmi_set_vcpuregs(self.vmi, regs, vcpu)
+        status = lib.vmi_set_vcpuregs(self.vmi, regs.cffi_regs, vcpu)
         check(status)
 
     def pause_vm(self):
