@@ -57,6 +57,12 @@ class RegAccess(Enum):
     RW = lib.VMI_REGACCESS_RW
 
 
+class InterruptType(Enum):
+    INVALID = lib.INT_INVALID
+    INT3 = lib.INT3
+    NEXT = lib.INT_NEXT
+
+
 @ffi.def_extern()
 def generic_event_callback(cffi_vmi, cffi_event):
     # get generic event data dict
@@ -209,4 +215,38 @@ class RegEvent(Event):
         d['out_access'] = RegAccess(self._cffi_event.reg_event.out_access).name
         d['value'] = hex(self._cffi_event.reg_event.value)
         d['previous'] = hex(self._cffi_event.reg_event.previous)
+        return d
+
+
+class IntEvent(Event):
+
+    type = EventType.INTERRUPT
+
+    def __init__(self, callback, intr=InterruptType.INT3, reinject=-1,
+                 slat_id=0, data=None):
+        super().__init__(callback, slat_id, data)
+        self.intr = intr
+        self._reinject = reinject
+
+    @property
+    def reinject(self):
+        return self._reinject
+
+    @reinject.setter
+    def reinject(self, value):
+        # the event callback needs to set the reinjection
+        # behavior
+        self._reinject = value
+        self._cffi_event.interrupt_event.reinject = self._reinject
+
+    def to_cffi(self):
+        super().to_cffi()
+        self._cffi_event.interrupt_event.intr = self.intr.value
+        self._cffi_event.interrupt_event.reinject = self._reinject
+        return self._cffi_event
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['intr'] = self.intr.name
+        d['reinject'] = self._reinject
         return d

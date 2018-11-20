@@ -66,9 +66,29 @@ typedef struct {
     addr_t offset;
 } mem_access_event_t;
 
+typedef uint8_t interrupts_t;
+
+#define INT_INVALID     0
+#define INT3            1
+#define INT_NEXT        2
+
 // interrupt_event_t
 typedef struct {
-    ...;
+    interrupts_t intr;
+
+    union {
+        /* INT3 */
+        struct {
+            ...;
+            int8_t reinject;
+            ...;
+        };
+        ...;
+    };
+
+    addr_t gla;
+    addr_t gfn;
+    addr_t offset;
 } interrupt_event_t;
 
 // single_step_event_t
