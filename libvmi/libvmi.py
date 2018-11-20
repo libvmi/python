@@ -581,7 +581,7 @@ class Libvmi(object):
         status = lib.vmi_write(self.vmi, ctx.to_ffi(), count, cffi_buffer,
                                bytes_written)
         check(status)
-        return bytes_written
+        return bytes_written[0]
 
     def write_ksym(self, symbol, buffer):
         cffi_buffer = ffi.from_buffer(buffer)
@@ -590,7 +590,7 @@ class Libvmi(object):
         status = lib.vmi_write_ksym(self.vmi, symbol, count, cffi_buffer,
                                     bytes_written)
         check(status)
-        return bytes_written
+        return bytes_written[0]
 
     def write_va(self, vaddr, pid, buffer):
         cffi_buffer = ffi.from_buffer(buffer)
@@ -599,7 +599,7 @@ class Libvmi(object):
         status = lib.vmi_write_va(self.vmi, vaddr, pid, count, cffi_buffer,
                                   bytes_written)
         check(status)
-        return bytes_written
+        return bytes_written[0]
 
     def write_pa(self, paddr, buffer):
         cffi_buffer = ffi.from_buffer(buffer)
@@ -608,7 +608,7 @@ class Libvmi(object):
         status = lib.vmi_write_pa(self.vmi, paddr, count, cffi_buffer,
                                   bytes_written)
         check(status)
-        return bytes_written
+        return bytes_written[0]
 
     def write_8(self, ctx, value):
         cffi_value = ffi.new("uint8_t *", value)
