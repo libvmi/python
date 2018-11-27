@@ -47,6 +47,7 @@ def main(args):
                 if list_head == tmp_next:
                     break
 
+                page_mode = vmi.get_page_mode(0)
                 modname = None
                 # print out the module name
                 if os == VMIOS.LINUX:
@@ -56,7 +57,6 @@ def main(args):
                         modname = vmi.read_str_va(next_module + 8, 0)
 
                 elif os == VMIOS.WINDOWS:
-                    page_mode = vmi.get_page_mode(0)
                     if page_mode == PageMode.IA32E:
                         modname = vmi.read_unicode_str_va(next_module + 0x58,
                                                           0)
