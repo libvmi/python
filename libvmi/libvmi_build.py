@@ -2,7 +2,6 @@
 
 
 import os
-from pathlib import Path
 
 import pkgconfig
 from cffi import FFI
@@ -23,6 +22,7 @@ VMI_SOURCES = [
     '<libvmi/libvmi_extra.h>'
 ]
 
+
 def get_cflags(package):
     includes = pkgconfig.cflags(package)
     if not includes:
@@ -40,13 +40,14 @@ def get_libs(package):
     libs = libs.replace('-l', '').split(' ')
     return libs
 
+
 def check_header(header):
     inc_path_list = [
         '/usr/include',
         '/usr/local/include'
     ]
     for inc_path in inc_path_list:
-        if (Path(inc_path) / header).exists():
+        if os.path.exists(inc_path + '/' + header):
             return True
     return False
 
