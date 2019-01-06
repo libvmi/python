@@ -30,3 +30,4 @@ install:
 
 script:
   - pep8 --show-source -v
+  - python -c 'from libvmi import Libvmi'
