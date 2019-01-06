@@ -4,8 +4,6 @@
 
 #define VMI_INIT_EVENTS 4 /**< initialize events */
 
-#define VMI_INIT_SHM 8 /**< initialize SHM mode */
-
 // x86 registers
 #define EAX             0
 #define EBX             1
@@ -97,8 +95,6 @@ typedef enum vmi_init_error {
     VMI_INIT_ERROR_OS, /**< Failed to determine or initialize OS functions */
 
     VMI_INIT_ERROR_EVENTS, /**< Failed to initialize events */
-
-    VMI_INIT_ERROR_SHM, /**< Failed to initialize SHM */
 
     VMI_INIT_ERROR_NO_CONFIG, /**< No configuration was found for OS initialization */
 
