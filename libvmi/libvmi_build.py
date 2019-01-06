@@ -2,6 +2,7 @@
 
 
 import os
+from pathlib import Path
 
 import pkgconfig
 from cffi import FFI
@@ -11,11 +12,16 @@ from cffi import FFI
 CDEF_HEADERS = [
     'glib_cdef.h',
     'libvmi_cdef.h',
-    'events_cdef.h',
     'slat_cdef.h',
     'libvmi_extra_cdef.h',
 ]
 
+# used by ffi.set_source
+VMI_SOURCES = [
+    '<libvmi/libvmi.h>',
+    '<libvmi/slat.h>',
+    '<libvmi/libvmi_extra.h>'
+]
 
 def get_cflags(package):
     includes = pkgconfig.cflags(package)
@@ -34,6 +40,15 @@ def get_libs(package):
     libs = libs.replace('-l', '').split(' ')
     return libs
 
+def check_header(header):
+    inc_path_list = [
+        '/usr/include',
+        '/usr/local/include'
+    ]
+    for inc_path in inc_path_list:
+        if (Path(inc_path) / header).exists():
+            return True
+    return False
 
 # glib cflags and libs
 glib_includes = get_cflags('glib-2.0')
@@ -50,14 +65,17 @@ libs.extend(libvmi_libs)
 libs.extend(glib_libs)
 
 ffi = FFI()
+
+# checking for events.h
+if check_header('libvmi/events.h'):
+    VMI_SOURCES.append('<libvmi/events.h>')
+    CDEF_HEADERS.append('events_cdef.h')
+
+c_header_source = '\n'.join(['#include '+source for source in VMI_SOURCES])
+print(c_header_source)
+
 # set source
-ffi.set_source("_libvmi",
-               """
-               #include <libvmi/libvmi.h>
-               #include <libvmi/events.h>
-               #include <libvmi/slat.h>
-               #include <libvmi/libvmi_extra.h>
-               """,
+ffi.set_source("_libvmi", c_header_source,
                libraries=libs, include_dirs=includes)
 
 
