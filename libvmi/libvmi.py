@@ -1,3 +1,4 @@
+from future.utils import raise_from
 from builtins import bytes, object, str
 from enum import Enum
 
@@ -71,8 +72,8 @@ class Registers:
         try:
             return getattr(self.cffi_regs.x86, index.name.lower())
         except AttributeError as e:
-            raise RuntimeError('Unknown field {} in regs.x86'
-                               .format(index.name.lower())) from e
+            raise_from(RuntimeError('Unknown field {} in regs.x86'
+                                    .format(index.name.lower())), e)
 
     def __setitem__(self, index, value):
         # index should be an enum
@@ -82,8 +83,8 @@ class Registers:
         try:
             setattr(self.cffi_regs.x86, index.name.lower(), value)
         except AttributeError as e:
-            raise RuntimeError('Unknown field {} in regs.x86'
-                               .format(index.name.lower())) from e
+            raise_from(RuntimeError('Unknown field {} in regs.x86'
+                                    .format(index.name.lower())), e)
 
 
 class VMIMode(Enum):
