@@ -19,7 +19,7 @@ setup(
     author_email='mathieu.tarral@protonmail.com',
     url='https://github.com/libvmi/python',
     setup_requires=["cffi>=1.6.0", "pkgconfig", "pytest-runner"],
-    install_requires=["cffi>=1.6.0", "future"],
+    install_requires=["cffi>=1.6.0", "future", "enum34;python_version<'3.4'"],
     tests_require=["pytest", "pytest-pep8", "libvirt-python"],
     cffi_modules=['libvmi/libvmi_build.py:ffi'],
     packages=['libvmi'],
