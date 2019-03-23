@@ -231,7 +231,7 @@ typedef struct x86_regs {
     uint64_t fs_base;
     uint64_t gs_base;
     uint32_t cs_arbytes;
-    uint32_t _pad;
+    ...;
 } x86_registers_t;
 
 typedef struct arm_registers {
@@ -240,7 +240,7 @@ typedef struct arm_registers {
     uint64_t ttbcr;
     uint64_t pc;
     uint32_t cpsr;
-    uint32_t _pad;
+    ...;
 } arm_registers_t;
 
 typedef struct registers {
