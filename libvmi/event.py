@@ -250,3 +250,38 @@ class IntEvent(Event):
         d['intr'] = self.intr.name
         d['reinject'] = self._reinject
         return d
+
+
+class DebugEvent(Event):
+
+    type = EventType.DEBUG_EXCEPTION
+
+    def __init__(self, callback, reinject=-1,
+                 slat_id=0, data=None):
+        super().__init__(callback, slat_id, data)
+        self._reinject = reinject
+
+    @property
+    def reinject(self):
+        return self._reinject
+
+    @reinject.setter
+    def reinject(self, value):
+        # the event callback needs to set the reinjection
+        # behavior
+        self._reinject = value
+        self._cffi_event.debug_event.reinject = self._reinject
+
+    def to_cffi(self):
+        super().to_cffi()
+        self._cffi_event.debug_event.reinject = self._reinject
+        return self._cffi_event
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['gla'] = hex(self._cffi_event.debug_event.gla)
+        d['gfn'] = hex(self._cffi_event.debug_event.gfn)
+        d['offset'] = hex(self._cffi_event.debug_event.offset)
+        d['type'] = hex(self._cffi_event.debug_event.type)
+        d['reinject'] = self._reinject
+        return d
