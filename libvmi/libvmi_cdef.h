@@ -41,6 +41,15 @@
 #define CR0             18
 #define CR2             19
 #define CR3             20
+#define CR4             21
+#define XCR0            22
+
+#define DR0             23
+#define DR1             24
+#define DR2             25
+#define DR3             26
+#define DR6             27
+#define DR7             28
 
 // vmi_instance_t
 typedef struct vmi_instance *vmi_instance_t;
