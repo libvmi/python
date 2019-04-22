@@ -103,6 +103,12 @@ typedef struct {
 
 // debug_event_t
 typedef struct {
+    addr_t gla;
+    addr_t gfn;
+    addr_t offset;
+    uint32_t insn_length;
+    uint8_t type;
+    int8_t reinject;
     ...;
 } debug_event_t;
 

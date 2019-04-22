@@ -37,6 +37,14 @@ class X86Reg(Enum):
     CR0 = lib.CR0
     CR2 = lib.CR2
     CR3 = lib.CR3
+    CR4 = lib.CR4
+
+    DR0 = lib.DR0
+    DR1 = lib.DR1
+    DR2 = lib.DR2
+    DR3 = lib.DR3
+    DR6 = lib.DR6
+    DR7 = lib.DR7
 
 
 class Registers:
