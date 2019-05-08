@@ -805,6 +805,13 @@ addr_t vmi_get_max_physical_address(
 unsigned int vmi_get_num_vcpus (
     vmi_instance_t vmi);
 
+status_t
+vmi_request_page_fault(
+    vmi_instance_t vmi,
+    unsigned long vcpu,
+    uint64_t virtual_address,
+    uint32_t error_code);
+
 status_t vmi_get_vcpureg(
     vmi_instance_t vmi,
     uint64_t *value,
