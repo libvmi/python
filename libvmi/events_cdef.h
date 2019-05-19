@@ -1,4 +1,6 @@
-#define VMI_EVENTS_VERSION 0x00000005
+// for compatibility with libvmi
+// see https://github.com/libvmi/libvmi/blob/master/libvmi/events.h#L36
+#define VMI_EVENTS_VERSION 0x00000006
 
 typedef uint16_t vmi_event_type_t;
 
