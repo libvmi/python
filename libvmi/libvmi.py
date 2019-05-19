@@ -829,6 +829,10 @@ class Libvmi(object):
     def get_num_vcpus(self):
         return lib.vmi_get_num_vcpus(self.vmi)
 
+    def request_page_fault(self, vcpu, vaddr, error_code):
+        status = lib.vmi_request_page_fault(self.vmi, vcpu, vaddr, error_code)
+        check(status)
+
     # TODO needs a reg_t
     def get_vcpu_reg(self, reg, vcpu):
         value = ffi.new("uint64_t *")
