@@ -168,6 +168,12 @@ class TranslateMechanism(Enum):
     KERNEL_SYMBOL = lib.VMI_TM_KERNEL_SYMBOL
 
 
+class VMIInitData(Enum):
+    XEN_EVTCHN = lib.VMI_INIT_DATA_XEN_EVTCHN
+    MEMMAP = lib.VMI_INIT_DATA_MEMMAP
+    KVMI_SOCKET = lib.VMI_INIT_DATA_KVMI_SOCKET
+
+
 class AccessContext(object):
 
     def __init__(self, tr_mechanism=TranslateMechanism.NONE, addr=0,
@@ -217,7 +223,7 @@ class Libvmi(object):
         'vmi',
     )
 
-    def __init__(self, domain, init_flags=INIT_DOMAINNAME, init_data=ffi.NULL,
+    def __init__(self, domain, init_flags=INIT_DOMAINNAME, init_data=None,
                  config_mode=VMIConfig.GLOBAL_FILE_ENTRY, config=ffi.NULL,
                  mode=None, partial=False):
         self.vmi = ffi.NULL
@@ -226,11 +232,27 @@ class Libvmi(object):
         # avoid GC to free ghashtable inserted values
         ghash_ref = dict()
         ghash = None
+        # keep references on ffi buffers, avoid issues with GC
+        ffi_refs = {
+            'init_data': []
+        }
+        init_data_ffi = ffi.NULL
+        if init_data:
+            init_data_ffi = ffi.new("vmi_init_data_t *", {"entry": len(init_data)})
+            init_data_ffi.count = len(init_data)
+            for i, (e_type, e_value) in enumerate(init_data.items()):
+                init_data_ffi.entry[i].type = e_type.value
+                if not isinstance(e_value, str):
+                    raise RuntimeError("Passing anything else than a string as init_data value is not implemented")
+                ref = e_value.encode()
+                init_data_ffi.entry[i].data = ffi.from_buffer(ref)
+                # keep a ref !
+                ffi_refs['init_data'].append(ref)
         if partial:
             # vmi_init
             if not mode:
                 # calling vmi_get_access_mode to auto determine vmi_mode
-                mode = self.get_access_mode(domain, init_flags, init_data)
+                mode = self.get_access_mode(domain, init_flags, init_data_ffi)
             if not isinstance(mode, VMIMode):
                 raise RuntimeError("mode is not an instance of VMIMode")
             if (not init_flags & INIT_DOMAINNAME and
@@ -243,7 +265,7 @@ class Libvmi(object):
                                   mode.value,
                                   domain,
                                   init_flags,
-                                  init_data,
+                                  init_data_ffi,
                                   init_error)
         else:
             # vmi_init_complete
@@ -280,7 +302,7 @@ class Libvmi(object):
             status = lib.vmi_init_complete(self.opaque_vmi,
                                            domain,
                                            init_flags,
-                                           init_data,
+                                           init_data_ffi,
                                            config_mode.value,
                                            config,
                                            init_error)
