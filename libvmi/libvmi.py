@@ -834,7 +834,7 @@ class Libvmi(object):
         check(status)
 
     # TODO needs a reg_t
-    def get_vcpu_reg(self, reg, vcpu):
+    def get_vcpureg(self, reg, vcpu):
         value = ffi.new("uint64_t *")
         status = lib.vmi_get_vcpureg(self.vmi, value, reg, vcpu)
         check(status)
