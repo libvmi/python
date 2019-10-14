@@ -54,7 +54,7 @@ class VMIAddressSpace(addrspace.BaseAddressSpace):
 
         domain = config.LOCATION[len("vmi://"):]
         self.vmi = Libvmi(domain, partial=True)
-        self.dtb = self.vmi.get_vcpu_reg(X86Reg.CR3.value, 0)
+        self.dtb = self.vmi.get_vcpureg(X86Reg.CR3.value, 0)
 
     def close(self):
         self.vmi.destroy()
