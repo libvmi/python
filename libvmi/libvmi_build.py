@@ -60,6 +60,7 @@ libvmi_libs = get_libs('libvmi')
 
 includes = []
 includes.extend(glib_includes)
+includes.extend(["/usr/local/include"])
 
 libs = []
 libs.extend(libvmi_libs)
@@ -73,6 +74,7 @@ if check_header('libvmi/events.h'):
     CDEF_HEADERS.append('events_cdef.h')
 
 c_header_source = '\n'.join(['#include '+source for source in VMI_SOURCES])
+c_header_source += "\n#include <glib.h>"
 print(c_header_source)
 
 # set source
