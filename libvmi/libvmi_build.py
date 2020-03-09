@@ -19,7 +19,8 @@ CDEF_HEADERS = [
 VMI_SOURCES = [
     '<libvmi/libvmi.h>',
     '<libvmi/slat.h>',
-    '<libvmi/libvmi_extra.h>'
+    '<libvmi/libvmi_extra.h>',
+    '<glib.h>'
 ]
 
 
@@ -73,7 +74,6 @@ if check_header('libvmi/events.h'):
     CDEF_HEADERS.append('events_cdef.h')
 
 c_header_source = '\n'.join(['#include '+source for source in VMI_SOURCES])
-print(c_header_source)
 
 # set source
 ffi.set_source("_libvmi", c_header_source,
