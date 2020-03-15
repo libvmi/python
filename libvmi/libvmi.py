@@ -452,7 +452,7 @@ class Libvmi(object):
         return value[0]
 
     def read_str(self, ctx):
-        value = lib.vmi_read_str_va(self.vmi, ctx.to_ffi())
+        value = lib.vmi_read_str(self.vmi, ctx.to_ffi())
         if value == ffi.NULL:
             raise LibvmiError('VMI_FAILURE')
         return ffi.string(value).decode()
