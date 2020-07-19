@@ -1,4 +1,4 @@
-#define VMI_EVENTS_VERSION 0x00000006
+#define VMI_EVENTS_VERSION 0x00000007
 
 typedef uint16_t vmi_event_type_t;
 
