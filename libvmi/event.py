@@ -4,7 +4,6 @@ from enum import Enum
 
 from _libvmi import ffi, lib
 
-
 EVENTS_VERSION = lib.VMI_EVENTS_VERSION
 
 

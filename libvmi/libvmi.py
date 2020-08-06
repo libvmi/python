@@ -1,8 +1,8 @@
-from future.utils import raise_from
 from builtins import bytes, object, str
 from enum import Enum
 
 from _libvmi import ffi, lib
+from future.utils import raise_from
 
 # export libvmi defines
 INIT_DOMAINNAME = lib.VMI_INIT_DOMAINNAME
