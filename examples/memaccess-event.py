@@ -12,7 +12,6 @@ Options:
 
 import sys
 import signal
-from pprint import pprint
 
 from docopt import docopt
 from libvmi import Libvmi, INIT_DOMAINNAME, INIT_EVENTS

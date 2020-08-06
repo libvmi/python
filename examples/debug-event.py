@@ -19,7 +19,7 @@ from pprint import pprint
 from docopt import docopt
 from libvmi import Libvmi, INIT_DOMAINNAME, INIT_EVENTS, X86Reg
 from libvmi.event import DebugEvent, SingleStepEvent, EventResponse
-from utils import dtb_to_pname, pause
+from utils import pause
 
 
 # catch SIGINT
