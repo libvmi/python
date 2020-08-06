@@ -52,6 +52,7 @@ def check_header(header):
             return True
     return False
 
+
 # glib cflags and libs
 glib_includes = get_cflags('glib-2.0')
 glib_libs = get_libs('glib-2.0')
