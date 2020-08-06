@@ -40,7 +40,7 @@ def wait_for_ip(domain, network_name='default'):
     while True:
         net = domain.connect().networkLookupByName(network_name)
         leases = net.DHCPLeases()
-        found = [l for l in leases if l['mac'] == mac_addr]
+        found = [lease for lease in leases if lease['mac'] == mac_addr]
         if found:
             return found[0]['ipaddr']
         time.sleep(1)
