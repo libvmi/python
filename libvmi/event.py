@@ -201,6 +201,14 @@ class RegEvent(Event):
         if self.equal is None:
             self.equal = 0
 
+    @property
+    def value(self):
+        return self._cffi_event.reg_event.value
+
+    @value.setter
+    def value(self, v):
+        self._cffi_event.reg_event.value = v
+
     def to_cffi(self):
         super().to_cffi()
         self._cffi_event.reg_event.reg = self.register.value
