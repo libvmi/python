@@ -975,6 +975,11 @@ class Libvmi(object):
         events_pending = lib.vmi_are_events_pending(self.vmi)
         return events_pending
 
+    def toggle_single_step_vcpu(self, event, vcpu, enabled):
+        cffi_event = event.to_cffi()
+        status = lib.vmi_toggle_single_step_vcpu(self.vmi, cffi_event, vcpu, enabled)
+        check(status)
+
     # extra
     def get_va_pages(self, dtb):
         cffi_va_pages = lib.vmi_get_va_pages(self.vmi, dtb)
