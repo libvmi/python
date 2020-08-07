@@ -6,7 +6,6 @@ import os
 import pkgconfig
 from cffi import FFI
 
-
 # glib_cdef.h must be first
 CDEF_HEADERS = [
     'glib_cdef.h',
