@@ -92,6 +92,10 @@ class Event(object):
         self._cffi_event = ffi.new("vmi_event_t *")
 
     @property
+    def x86_regs(self):
+        return self._cffi_event.x86_regs
+
+    @property
     def vmi(self):
         return self._vmi
 
