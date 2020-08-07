@@ -161,7 +161,7 @@ class MemEvent(Event):
 
     @property
     def out_access(self):
-        return self._cffi_event.mem_event.out_access
+        return MemAccess(self._cffi_event.mem_event.out_access)
 
     @property
     def gptw(self):
