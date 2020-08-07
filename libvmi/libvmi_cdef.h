@@ -51,6 +51,52 @@
 #define DR6             27
 #define DR7             28
 
+#define MSR_FLAGS        70
+#define MSR_LSTAR        71
+#define MSR_CSTAR        72
+#define MSR_SYSCALL_MASK 73
+#define MSR_EFER         74
+#define MSR_TSC_AUX      75
+
+#define MSR_STAR                    119
+#define MSR_SHADOW_GS_BASE          120
+#define MSR_MTRRfix64K_00000        121
+#define MSR_MTRRfix16K_80000        122
+#define MSR_MTRRfix16K_A0000        123
+#define MSR_MTRRfix4K_C0000         124
+#define MSR_MTRRfix4K_C8000         125
+#define MSR_MTRRfix4K_D0000         126
+#define MSR_MTRRfix4K_D8000         127
+#define MSR_MTRRfix4K_E0000         128
+#define MSR_MTRRfix4K_E8000         129
+#define MSR_MTRRfix4K_F0000         130
+#define MSR_MTRRfix4K_F8000         131
+#define MSR_MTRRdefType             132
+#define MSR_IA32_MC0_CTL            133
+#define MSR_IA32_MC0_STATUS         134
+#define MSR_IA32_MC0_ADDR           135
+#define MSR_IA32_MC0_MISC           136
+#define MSR_IA32_MC1_CTL            137
+#define MSR_IA32_MC0_CTL2           138
+#define MSR_AMD_PATCHLEVEL          139
+#define MSR_AMD64_TSC_RATIO         140
+#define MSR_IA32_P5_MC_ADDR         141
+#define MSR_IA32_P5_MC_TYPE         142
+#define MSR_IA32_TSC                143
+#define MSR_IA32_PLATFORM_ID        144
+#define MSR_IA32_EBL_CR_POWERON     145
+#define MSR_IA32_EBC_FREQUENCY_ID   146
+#define MSR_IA32_FEATURE_CONTROL    147
+#define MSR_IA32_SYSENTER_CS        148
+#define MSR_IA32_SYSENTER_ESP       149
+#define MSR_IA32_SYSENTER_EIP       150
+#define MSR_IA32_MISC_ENABLE        151
+#define MSR_HYPERVISOR              152
+
+#define MSR_ANY                     153
+
+#define MSR_ALL          76
+
 // vmi_instance_t
 typedef struct vmi_instance *vmi_instance_t;
 
