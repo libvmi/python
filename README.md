@@ -3,7 +3,7 @@
 [![Join the chat at https://gitter.im/libvmi/python](https://badges.gitter.im/libvmi/python.svg)](https://gitter.im/libvmi/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/libvmi/python.svg?branch=master)](https://travis-ci.org/libvmi/python)
 
-If you'd rather perform introspection using Python instead of C, then these
+If you'd rather perform introspection using Python instead of C language, then these
 bindings will help get you going.
 
 The bindings are `Python 2` compatible.
