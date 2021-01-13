@@ -639,7 +639,7 @@ class Libvmi(object):
         if value == ffi.NULL:
             raise LibvmiError('VMI_FAILURE')
         encoding = ffi.string(value.encoding).decode()
-        buffer = ffi.string(value.contents, value.length)
+        buffer = bytes(ffi.unpack(value.contents, value.length))
         self.free_unicode_str(value)
         return buffer.decode(encoding)
 
