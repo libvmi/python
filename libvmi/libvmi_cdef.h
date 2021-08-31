@@ -202,13 +202,12 @@ typedef enum page_mode {
     VMI_PM_AARCH64  /**< ARM 64-bit paging */
 } page_mode_t;
 
-typedef enum translation_mechanism {
-    VMI_TM_INVALID,         /**< Invalid translation mechanism */
-    VMI_TM_NONE,            /**< No translation is required, address is physical address */
-    VMI_TM_PROCESS_DTB,     /**< Translate addr via specified directory table base. */
-    VMI_TM_PROCESS_PID,     /**< Translate addr by finding process first to use its DTB. */
-    VMI_TM_KERNEL_SYMBOL    /**< Find virtual address of kernel symbol and translate it via kernel DTB. */
-} translation_mechanism_t;
+typedef uint32_t translation_mechanism_t;
+#define VMI_TM_NONE              0 /**< No translation is required, address is physical address */
+#define VMI_TM_PROCESS_DTB       1 /**< Translate addr via specified pagetable (aka. directory table base). */
+#define VMI_TM_PROCESS_PT        1 /**< Translate addr via specified pagetable. */
+#define VMI_TM_PROCESS_PID       2 /**< Translate addr by finding process first to use its DTB. */
+#define VMI_TM_KERNEL_SYMBOL     3 /**< Find virtual address of kernel symbol and translate it via kernel DTB. */
 
 // vmi_arch_t
 typedef enum arch {
@@ -323,12 +322,21 @@ typedef struct registers {
     };
 } registers_t;
 
+
 // page_info_t
 typedef struct page_info {
-    addr_t vaddr;
-    addr_t dtb;
-    addr_t paddr;
-    page_size_t size;
+    addr_t vaddr;       /**< virtual address */
+    addr_t paddr;       /**< physical address */
+    addr_t naddr;       /**< nested address */
+
+    page_size_t size;   /**< page size (VMI_PS_*) */
+    page_size_t nsize;  /**< nested page size (VMI_PS_*) */
+
+    addr_t pt;          /**< pagetable used for translation */
+    page_mode_t pm;     /**< page mode user for translation */
+
+    addr_t npt;         /**< nested pagetable used for translation */
+    page_mode_t npm;    /**< nested page mode user for translation */
 
     union {
         struct {
@@ -380,12 +388,43 @@ typedef struct page_info {
 
 // access_context_t
 typedef struct {
-    translation_mechanism_t translate_mechanism;
+    uint32_t version;   /**< ABI struct version */
+    uint32_t _pad;
 
-    addr_t addr;        /**< specify iff using VMI_TM_NONE, VMI_TM_PROCESS_DTB or VMI_TM_PROCESS_PID */
-    const char *ksym;   /**< specify iff using VMI_TM_KERNEL_SYMBOL */
-    addr_t dtb;         /**< specify iff using VMI_TM_PROCESS_DTB */
-    vmi_pid_t pid;      /**< specify iff using VMI_TM_PROCESS_PID */
+    union {
+        page_mode_t pm; /**< paging mode to use for translation */
+        page_mode_t page_mode; /**< paging mode to use for translation */
+    };
+    union {
+        page_mode_t npm; /**< paging mode to use for nested translation */
+        page_mode_t nested_page_mode; /**< paging mode to use for nested translation */
+    };
+    union {
+        addr_t npt; /**< specify iff using nested translation */
+        addr_t nested_page_table; /**< specify iff using nested translation */
+    };
+    union {
+        translation_mechanism_t tm; /**< method to use for translation */
+        translation_mechanism_t translate_mechanism; /**< method to use for translation */
+    };
+
+    uint32_t _pad2;
+
+    union {
+        struct {
+            addr_t addr; /**< address to translate */
+
+            union {
+                addr_t pt;         /**< iff VMI_TM_PROCESS_DTB/PT */
+                addr_t page_table; /**< iff VMI_TM_PROCESS_DTB/PT */
+                addr_t dtb;        /**< iff VMI_TM_PROCESS_DTB/PT */
+                vmi_pid_t pid;     /**< iff VMI_TM_PROCESS_PID */
+            };
+        };
+
+        /* VMI_TM_KERNEL_SYMBOL */
+        const char *ksym; /**< kernel symbol to translate  */
+    };
 } access_context_t;
 
 typedef struct _ustring {
