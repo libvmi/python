@@ -206,9 +206,9 @@ class VMIWinVer(Enum):
 
 
 class TranslateMechanism(Enum):
-    INVALID = lib.VMI_TM_INVALID
     NONE = lib.VMI_TM_NONE
     PROCESS_DTB = lib.VMI_TM_PROCESS_DTB
+    PROCESS_PT = lib.VMI_TM_PROCESS_PT
     PROCESS_PID = lib.VMI_TM_PROCESS_PID
     KERNEL_SYMBOL = lib.VMI_TM_KERNEL_SYMBOL
 
