@@ -1,7 +1,7 @@
 # Libvmi Python bindings
 
 [![Join the chat at https://gitter.im/libvmi/python](https://badges.gitter.im/libvmi/python.svg)](https://gitter.im/libvmi/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://travis-ci.org/libvmi/python.svg?branch=master)](https://travis-ci.org/libvmi/python)
+[![CI](https://github.com/libvmi/python/actions/workflows/ci.yml/badge.svg)](https://github.com/libvmi/python/actions/workflows/ci.yml)
 
 If you'd rather perform introspection using Python instead of C, then these
 bindings will help get you going.
