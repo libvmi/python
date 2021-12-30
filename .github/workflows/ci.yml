@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: install dependencies
-        run: sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
+        run: sudo apt-get update && sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
 
       - name: clone libvmi
         uses: actions/checkout@v2
