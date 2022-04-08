@@ -1,17 +1,19 @@
-#define VMI_EVENTS_VERSION 0x00000008
+#define VMI_EVENTS_VERSION 0x00000009
 
 typedef uint16_t vmi_event_type_t;
 
-#define VMI_EVENT_INVALID 0
-#define VMI_EVENT_MEMORY 1
-#define VMI_EVENT_REGISTER 2
-#define VMI_EVENT_SINGLESTEP 3
-#define VMI_EVENT_INTERRUPT 4
-#define VMI_EVENT_GUEST_REQUEST 5
-#define VMI_EVENT_CPUID 6
-#define VMI_EVENT_DEBUG_EXCEPTION 7
-#define VMI_EVENT_PRIVILEGED_CALL 8
-#define VMI_EVENT_DESCRIPTOR_ACCESS 9
+#define VMI_EVENT_INVALID           0
+#define VMI_EVENT_MEMORY            1   /**< Read/write/execute on a region of memory */
+#define VMI_EVENT_REGISTER          2   /**< Read/write of a specific register */
+#define VMI_EVENT_SINGLESTEP        3   /**< Instructions being executed on a set of VCPUs */
+#define VMI_EVENT_INTERRUPT         4   /**< Interrupts being delivered */
+#define VMI_EVENT_GUEST_REQUEST     5   /**< Guest-requested event */
+#define VMI_EVENT_CPUID             6   /**< CPUID event */
+#define VMI_EVENT_DEBUG_EXCEPTION   7   /**< Debug exception event */
+#define VMI_EVENT_PRIVILEGED_CALL   8   /**< Privileged call (ie. SMC on ARM) */
+#define VMI_EVENT_DESCRIPTOR_ACCESS 9   /**< A descriptor table register was accessed */
+#define VMI_EVENT_FAILED_EMULATION  10  /**< Emulation failed when requested by VMI_EVENT_RESPONSE_EMULATE */
+#define VMI_EVENT_DOMAIN_WATCH      11  /**< Watch create/destroy events */
 
 
 typedef uint8_t vmi_reg_access_t;
@@ -30,12 +32,11 @@ typedef struct {
     uint8_t onchange;
     vmi_reg_access_t in_access;
     vmi_reg_access_t out_access;
-    uint32_t _pad;
+    ...;
     reg_t value;
-    union {
-        reg_t previous;
-        uint32_t msr;
-    };
+    reg_t previous;
+    uint32_t msr;
+    ...;
 } reg_event_t;
 
 
@@ -61,7 +62,7 @@ typedef struct {
     vmi_mem_access_t out_access;
     uint8_t gptw;
     uint8_t gla_valid;
-    uint8_t _pad[3];
+    ...;
     addr_t gla;
     addr_t offset;
 } mem_access_event_t;
@@ -75,20 +76,41 @@ typedef uint8_t interrupts_t;
 // interrupt_event_t
 typedef struct {
     interrupts_t intr;
+    ...;
 
     union {
         /* INT3 */
         struct {
-            ...;
+            /* IN/OUT */
+            uint32_t insn_length; /**< The instruction length to be used when reinjecting */
+
+            /**
+             * OUT
+             *
+             * Toggle, controls whether interrupt is re-injected after callback.
+             *   Set reinject to 1 to deliver it to guest ("pass through" mode)
+             *   Set reinject to 0 to swallow it silently without
+             */
             int8_t reinject;
             ...;
-        };
-        ...;
-    };
 
-    addr_t gla;
-    addr_t gfn;
-    addr_t offset;
+            addr_t gla;         /**< (Global Linear Address) == RIP of the trapped instruction */
+            addr_t gfn;         /**< (Guest Frame Number) == 'physical' page where trap occurred */
+            addr_t offset;      /**< Offset in bytes (relative to GFN) */
+
+            ...;
+        };
+
+        /* INT_NEXT */
+        struct {
+            /* OUT */
+            uint32_t vector;
+            uint32_t type;
+            uint32_t error_code;
+            ...;
+            uint64_t cr2;
+        };
+    };
 } interrupt_event_t;
 
 // single_step_event_t
@@ -114,11 +136,24 @@ typedef struct {
 
 // cpuid_event_t
 typedef struct {
+    uint32_t insn_length; /**< Length of the reported instruction */
+    uint32_t leaf;
+    uint32_t subleaf;
     ...;
 } cpuid_event_t;
 
 // descriptor_event_t
 typedef struct desriptor_event {
+    union {
+        struct {
+            uint32_t instr_info;         /* VMX: VMCS Instruction-Information */
+            ...;
+            uint64_t exit_qualification; /* VMX: VMCS Exit Qualification */
+        };
+        uint64_t exit_info;              /* SVM: VMCB EXITINFO */
+    };
+    uint8_t descriptor;                  /* VMI_DESCRIPTOR_* */
+    uint8_t is_write;
     ...;
 } descriptor_event_t;
 
@@ -152,10 +187,12 @@ struct vmi_event {
     uint32_t version;
     vmi_event_type_t type;
     uint16_t slat_id;
+    uint16_t next_slat_id;
+    ...;
     void *data;
     event_callback_t callback;
     uint32_t vcpu_id;
-    ...;
+    page_mode_t page_mode;
     union {
         reg_event_t reg_event;
         mem_access_event_t mem_event;
