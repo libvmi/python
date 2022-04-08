@@ -61,8 +61,8 @@ jobs:
         working-directory: python-libvmi
 
   publish:
-    needs: build
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux_2_24_x86_64
 
     steps:
       - uses: actions/checkout@v2
@@ -84,11 +84,17 @@ jobs:
           python setup.py bdist_wheel
         working-directory: python-libvmi
 
+      - name: Repair Wheels
+        run: |
+          for whl in dist/*.whl; do
+            auditwheel repair "$whl" -w dist/manylinux
+          done
+        working-directory: python-libvmi
+
       - name: Publish on PyPI 🚀
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
           user: __token__
           password: ${{ secrets.TESTPYPI_ACCESS_TOKEN }}
-          packages_dir: python-libvmi/dist
+          packages_dir: python-libvmi/dist/manylinux
           repository_url: https://test.pypi.org/legacy/
-
