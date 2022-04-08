@@ -1,0 +1,25 @@
+name: 'Libvmi setup'
+description: 'This actions installs LibVMI on the system'
+author: 'Mathieu Tarral'
+runs:
+    using: 'composite'
+    steps:
+      - name: install dependencies
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
+
+      - name: clone libvmi
+        uses: actions/checkout@v2
+        with:
+          repository: libvmi/libvmi
+          path: libvmi
+          # pinned to a specific commit to avoid breakage
+          ref: 'f9db2f45670b08c0f142a1d2d31e0b15e724815c'
+
+      - name: install libvmi
+        shell: bash
+        run: |
+          cmake -B build -DCMAKE_INSTALL_PREFIX=/usr .
+          cmake --build build
+          sudo cmake --build build --target install
+        working-directory: libvmi

@@ -37,28 +37,13 @@ jobs:
         with:
           path: python-libvmi
 
+      - name: Install Libvmi
+        uses: ./python-libvmi/.github/actions/libvmi-setup
+
       - name: Set up Python 🐍
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
-
-      - name: install dependencies
-        run: sudo apt-get update && sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
-
-      - name: clone libvmi
-        uses: actions/checkout@v2
-        with:
-          repository: libvmi/libvmi
-          path: libvmi
-          # pinned to a specific commit to avoid breakage
-          ref: 'f9db2f45670b08c0f142a1d2d31e0b15e724815c'
-
-      - name: install libvmi
-        run: |
-          cmake -B build -DCMAKE_INSTALL_PREFIX=/usr .
-          cmake --build build
-          sudo cmake --build build --target install
-        working-directory: libvmi
 
       - name: install python-libvmi 🔨
         run: |
@@ -83,6 +68,9 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v1
+
+      - name: Install Libvmi
+        uses: ./.github/actions/libvmi-setup
 
       - name: Set up Python 3.7 🐍
         uses: actions/setup-python@v1
