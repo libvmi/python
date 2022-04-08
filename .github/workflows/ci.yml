@@ -68,9 +68,11 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v1
+        with:
+          path: python-libvmi
 
       - name: Install Libvmi
-        uses: ./.github/actions/libvmi-setup
+        uses: ./python-libvmi/.github/actions/libvmi-setup
 
       - name: Set up Python 3.7 🐍
         uses: actions/setup-python@v1
@@ -82,9 +84,12 @@ jobs:
           python -m pip install wheel
           python setup.py sdist
           python setup.py bdist_wheel
+        working-directory: python-libvmi
 
       - name: Publish on PyPI 🚀
         uses: pypa/gh-action-pypi-publish@v1.3.1
         with:
           user: __token__
           password: ${{ secrets.ACCESS_TOKEN }}
+          packages_dir: python-libvmi/dist
+
