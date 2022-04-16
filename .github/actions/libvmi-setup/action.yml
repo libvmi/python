@@ -4,6 +4,13 @@ author: 'Mathieu Tarral'
 runs:
     using: 'composite'
     steps:
+      - name: Ensure sudo is available (manylinux container compat)
+        shell: bash
+        run: |
+          if [ "$EUID" -eq 0 ]; then
+            apt-get update && apt-get install -y sudo
+          fi
+
       - name: install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
