@@ -13,7 +13,7 @@ runs:
 
       - name: install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -qq cmake bison flex check libjson-c-dev libglib2.0-dev libxenstore3.0 libxen-dev libvirt-dev
+        run: sudo apt-get update && sudo apt-get install -qq cmake flex bison libglib2.0-dev libvirt-dev libjson-c-dev libyajl-dev
 
       - name: clone libvmi
         uses: actions/checkout@v2
