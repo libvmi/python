@@ -302,7 +302,7 @@ typedef struct x86_regs {
     uint64_t msr_lstar;
     uint64_t fs_base;
     uint64_t gs_base;
-    uint32_t cs_arbytes;
+    uint64_t cs_arbytes;
     ...;
 } x86_registers_t;
 
