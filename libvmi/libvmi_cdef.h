@@ -981,3 +981,6 @@ void vmi_pidcache_add(
     vmi_instance_t vmi,
     vmi_pid_t pid,
     addr_t dtb);
+
+void vmi_pagecache_flush(
+    vmi_instance_t vmi);

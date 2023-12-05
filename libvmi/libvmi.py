@@ -955,6 +955,9 @@ class Libvmi(object):
     def pidcache_add(self, pid, dtb):
         lib.vmi_pidcache_add(self.vmi, pid, dtb)
 
+    def pagecache_flush(self):
+        lib.vmi_pagecache_flush(self.vmi)
+
     # events
     def register_event(self, event):
         event.vmi = self
