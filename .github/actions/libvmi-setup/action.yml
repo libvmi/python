@@ -1,32 +1,65 @@
-name: 'Libvmi setup'
-description: 'This actions installs LibVMI on the system'
-author: 'Mathieu Tarral'
+name: "Libvmi setup"
+description: "This actions installs LibVMI on the system"
+author: "Mathieu Tarral"
 runs:
-    using: 'composite'
-    steps:
-      - name: Ensure sudo is available (manylinux container compat)
-        shell: bash
-        run: |
-          if [ "$EUID" -eq 0 ]; then
-            apt-get update && apt-get install -y sudo
-          fi
+  using: "composite"
+  steps:
+    - name: Detect OS and Set Environment Variable
+      id: detect-os
+      shell: bash
+      run: |
+        . /etc/os-release
+        if [ "$ID" = "ubuntu" ]; then
+          echo "OS_TYPE=Ubuntu" >> $GITHUB_ENV
+        elif [ "$ID" = "almalinux" ]; then
+          echo "OS_TYPE=CentOS" >> $GITHUB_ENV
+        else
+          echo "Unsupported OS: $ID"
+          exit 1
+        fi
 
-      - name: install dependencies
-        shell: bash
-        run: sudo apt-get update && sudo apt-get install -qq cmake flex bison libglib2.0-dev libvirt-dev libjson-c-dev libyajl-dev
+    - name: install dependencies
+      shell: bash
+      run: |
+        if [ "${{ env.OS_TYPE }}" = "Ubuntu" ]; then
+          sudo apt-get update && sudo apt-get install -qq cmake flex bison libglib2.0-dev libvirt-dev libjson-c-dev libyajl-dev
+        elif [ "${{ env.OS_TYPE }}" = "CentOS" ]; then
+          yum update && yum install -y cmake flex bison glib2-devel libvirt-devel json-c-devel yajl-devel
+        else
+          echo "Unknown OS"
+        fi
 
-      - name: clone libvmi
-        uses: actions/checkout@v2
-        with:
-          repository: libvmi/libvmi
-          path: libvmi
-          # pinned to a specific commit to avoid breakage
-          ref: '45b32c0f0003b4037700a1b534879b7d8bee5de0'
+    - name: install Xen headers for CentOS
+      shell: bash
+      run: |
+        if [ "${{ env.OS_TYPE }}" = "CentOS" ]; then
+          yum groupinstall -y "Development Tools"
+          yum install -y python3-devel iasl libuuid-devel ncurses-devel pixman-devel yajl-devel ninja-build
+          git clone --depth 1 https://github.com/xen-project/xen.git -b RELEASE-4.18.0
+          cd xen
+          ./configure --disable-docs --disable-stubdom
+          make -j $(nproc)
+          make install
+        fi
 
-      - name: install libvmi
-        shell: bash
-        run: |
-          cmake -B build -DCMAKE_INSTALL_PREFIX=/usr .
-          cmake --build build
+    - name: clone libvmi
+      uses: actions/checkout@v2
+      with:
+        repository: libvmi/libvmi
+        path: libvmi
+        # pinned to a specific commit to avoid breakage
+        ref: "45b32c0f0003b4037700a1b534879b7d8bee5de0"
+
+    - name: install libvmi
+      shell: bash
+      run: |
+        cmake -B build -DCMAKE_INSTALL_PREFIX=/usr .
+        cmake --build build
+        if [ "${{ env.OS_TYPE }}" = "Ubuntu" ]; then
           sudo cmake --build build --target install
-        working-directory: libvmi
+        elif [ "${{ env.OS_TYPE }}" = "CentOS" ] || [ "${{ env.OS_TYPE }}" = "Debian" ]; then
+          cmake --build build --target install
+        else
+          echo "Unknown OS"
+        fi
+      working-directory: libvmi
