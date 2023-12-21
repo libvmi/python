@@ -150,6 +150,8 @@ class VMIConfig(Enum):
     GLOBAL_FILE_ENTRY = lib.VMI_CONFIG_GLOBAL_FILE_ENTRY
     STRING = lib.VMI_CONFIG_STRING
     DICT = lib.VMI_CONFIG_GHASHTABLE
+    JSON_PATH = lib.VMI_CONFIG_JSON_PATH
+    FILE_PATH = lib.VMI_CONFIG_FILE_PATH
 
 
 class VMIStatus(Enum):
@@ -318,8 +320,8 @@ class Libvmi(object):
             # from str to bytes
             if init_flags & INIT_DOMAINNAME or init_flags & INIT_DOMAINID:
                 domain = domain.encode()
-            # same for VMI_CONFIG_STRING
-            if config_mode == VMIConfig.STRING:
+            # same for VMI_CONFIG_STRING | VMI_CONFIG_FILE_PATH | VMI_CONFIG_JSON_PATH
+            if config_mode in [VMIConfig.STRING, VMIConfig.FILE_PATH, VMIConfig.JSON_PATH]:
                 config = config.encode()
             elif config_mode == VMIConfig.DICT:
                 # need to convert config to a GHashTable
