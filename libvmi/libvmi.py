@@ -139,6 +139,22 @@ class Registers:
             raise_from(RuntimeError('Unknown field {} in regs.x86'
                                     .format(index.name.lower())), e)
 
+    def __str__(self):
+        # Heuristic to determine the architecture
+        if hasattr(self.cffi_regs.x86, 'rip') or hasattr(self.cffi_regs.x86, 'eip'):
+            regs_to_print = self.cffi_regs.x86
+        elif hasattr(self.cffi_regs.arm, 'pc'):
+            regs_to_print = self.cffi_regs.arm
+        else:
+            raise RuntimeError("Unable to determine architecture")
+        attributes = []
+        for attr in dir(regs_to_print):
+            if not attr.startswith('_'):
+                value = getattr(regs_to_print, attr)
+                attributes.append(f"{attr.lower()} = {value:#x}")
+
+        return '\n'.join(attributes)
+
 
 class VMIMode(Enum):
     XEN = lib.VMI_XEN
