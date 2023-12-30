@@ -139,6 +139,22 @@ class Registers:
             raise_from(RuntimeError('Unknown field {} in regs.x86'
                                     .format(index.name.lower())), e)
 
+    def __str__(self):
+        # Heuristic to determine the architecture
+        if hasattr(self.cffi_regs.x86, 'rip') or hasattr(self.cffi_regs.x86, 'eip'):
+            regs_to_print = self.cffi_regs.x86
+        elif hasattr(self.cffi_regs.arm, 'pc'):
+            regs_to_print = self.cffi_regs.arm
+        else:
+            raise RuntimeError("Unable to determine architecture")
+        attributes = []
+        for attr in dir(regs_to_print):
+            if not attr.startswith('_'):
+                value = getattr(regs_to_print, attr)
+                attributes.append(f"{attr.lower()} = {value:#x}")
+
+        return '\n'.join(attributes)
+
 
 class VMIMode(Enum):
     XEN = lib.VMI_XEN
@@ -150,6 +166,8 @@ class VMIConfig(Enum):
     GLOBAL_FILE_ENTRY = lib.VMI_CONFIG_GLOBAL_FILE_ENTRY
     STRING = lib.VMI_CONFIG_STRING
     DICT = lib.VMI_CONFIG_GHASHTABLE
+    JSON_PATH = lib.VMI_CONFIG_JSON_PATH
+    FILE_PATH = lib.VMI_CONFIG_FILE_PATH
 
 
 class VMIStatus(Enum):
@@ -318,8 +336,8 @@ class Libvmi(object):
             # from str to bytes
             if init_flags & INIT_DOMAINNAME or init_flags & INIT_DOMAINID:
                 domain = domain.encode()
-            # same for VMI_CONFIG_STRING
-            if config_mode == VMIConfig.STRING:
+            # same for VMI_CONFIG_STRING | VMI_CONFIG_FILE_PATH | VMI_CONFIG_JSON_PATH
+            if config_mode in [VMIConfig.STRING, VMIConfig.FILE_PATH, VMIConfig.JSON_PATH]:
                 config = config.encode()
             elif config_mode == VMIConfig.DICT:
                 # need to convert config to a GHashTable
