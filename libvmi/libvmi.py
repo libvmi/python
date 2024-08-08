@@ -908,8 +908,8 @@ class Libvmi(object):
     def get_memsize(self):
         return lib.vmi_get_memsize(self.vmi)
 
-    def get_max_physical_memory_address(self):
-        return lib.vmi_get_max_physical_memory_address(self.vmi)
+    def get_max_physical_address(self):
+        return lib.vmi_get_max_physical_address(self.vmi)
 
     def get_num_vcpus(self):
         return lib.vmi_get_num_vcpus(self.vmi)
