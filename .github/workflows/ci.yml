@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Python 3.7 🐍
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.7'
 
@@ -41,7 +41,7 @@ jobs:
         uses: ./python-libvmi/.github/actions/libvmi-setup
 
       - name: Set up Python 🐍
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
@@ -61,7 +61,7 @@ jobs:
         working-directory: python-libvmi
 
       - name: upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.python }}
           path: "python-libvmi/dist/*.whl"
@@ -76,7 +76,7 @@ jobs:
         python: ['3.7', '3.8', '3.9', '3.10', '3.11']
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: python-libvmi
 
@@ -85,7 +85,7 @@ jobs:
 
       # download artifact in current directory
       - name: download build artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.python }}
 
