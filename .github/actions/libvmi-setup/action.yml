@@ -24,7 +24,7 @@ runs:
         if [ "${{ env.OS_TYPE }}" = "Ubuntu" ]; then
           sudo apt-get update && sudo apt-get install -qq cmake flex bison libglib2.0-dev libvirt-dev libjson-c-dev libyajl-dev
         elif [ "${{ env.OS_TYPE }}" = "CentOS" ]; then
-          yum update && yum install -y cmake flex bison glib2-devel libvirt-devel json-c-devel yajl-devel
+          yum update -y && yum install -y cmake flex bison glib2-devel libvirt-devel json-c-devel yajl-devel
         else
           echo "Unknown OS"
         fi
