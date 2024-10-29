@@ -37,7 +37,7 @@ runs:
           yum install -y python3-devel iasl libuuid-devel ncurses-devel pixman-devel yajl-devel ninja-build
           git clone --depth 1 https://github.com/xen-project/xen.git -b RELEASE-4.18.0
           cd xen
-          ./configure --disable-docs --disable-stubdom
+          ./configure --disable-docs --disable-stubdom --disable-seabios
           make -j $(nproc)
           make install
         fi
