@@ -24,7 +24,7 @@ runs:
         if [ "${{ env.OS_TYPE }}" = "Ubuntu" ]; then
           sudo apt-get update && sudo apt-get install -qq cmake flex bison libglib2.0-dev libvirt-dev libjson-c-dev libyajl-dev
         elif [ "${{ env.OS_TYPE }}" = "CentOS" ]; then
-          yum update && yum install -y cmake flex bison glib2-devel libvirt-devel json-c-devel yajl-devel
+          yum update -y && yum install -y cmake flex bison glib2-devel libvirt-devel json-c-devel yajl-devel
         else
           echo "Unknown OS"
         fi
@@ -37,13 +37,13 @@ runs:
           yum install -y python3-devel iasl libuuid-devel ncurses-devel pixman-devel yajl-devel ninja-build
           git clone --depth 1 https://github.com/xen-project/xen.git -b RELEASE-4.18.0
           cd xen
-          ./configure --disable-docs --disable-stubdom
+          ./configure --disable-docs --disable-stubdom --disable-seabios
           make -j $(nproc)
           make install
         fi
 
     - name: clone libvmi
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: libvmi/libvmi
         path: libvmi
