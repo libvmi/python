@@ -48,7 +48,7 @@ runs:
         repository: libvmi/libvmi
         path: libvmi
         # pinned to a specific commit to avoid breakage
-        ref: "e7074407fc3b98db1aa73f918b3720bd4438734b"
+        ref: "8f9b010b0261dbc11e2dda5e718b0e9507109232"
 
     - name: install libvmi
       shell: bash
