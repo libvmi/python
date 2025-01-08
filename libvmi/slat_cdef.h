@@ -23,3 +23,7 @@ status_t vmi_slat_change_gfn (
     uint16_t slat_idx,
     addr_t old_gfn,
     addr_t new_gfn);
+
+status_t vmi_slat_control (
+    vmi_instance_t vmi, 
+    bool *state);

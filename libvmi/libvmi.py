@@ -983,6 +983,10 @@ class Libvmi(object):
         status = lib.vmi_register_event(self.vmi, cffi_event)
         check(status)
 
+    def set_mem_event(self, gfn, access, slatid):
+        status = lib.vmi_set_mem_event(self.vmi, gfn, access, slatid)
+        check(status)
+
     def clear_event(self, event):
         cffi_event = event.to_cffi()
         status = lib.vmi_clear_event(self.vmi, cffi_event, ffi.NULL)
@@ -1017,6 +1021,11 @@ class Libvmi(object):
         return va_pages
 
     # slat
+    def slat_control(self, state):
+        state = ffi.new("bool *")
+        status = lib.vmi_slat_control(self.vmi, state)
+        check(status)
+        
     def slat_get_domain_state(self):
         state = ffi.new("bool *")
         status = lib.vmi_slat_get_domain_state(self.vmi, state)
