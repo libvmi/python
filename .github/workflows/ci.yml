@@ -96,7 +96,7 @@ jobs:
           done
 
       - name: Publish on PyPI 🚀
-        uses: pypa/gh-action-pypi-publish@v1.5.0
+        uses: pypa/gh-action-pypi-publish@v1.13.0
         with:
           user: __token__
           password: ${{ secrets.ACCESS_TOKEN }}
